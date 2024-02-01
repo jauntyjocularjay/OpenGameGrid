@@ -1,4 +1,6 @@
-
+import {
+    Enum
+} from './ext_libs/EnumJS/ENUM.mjs'
 
 export class Field {
     constructor(width, depth){
@@ -45,20 +47,18 @@ export class Field {
 }
 
 export class HexNode {
-    constructor( x=null, y=null ){
-        const link = {
-            a: null,
-            b: null,
-            c: null,
-            d: null,
-            e: null,
-            f: null
-        }
+    constructor( posX=null, posY=null ){
+        const ea = null
+        const ne = null
+        const no = null
+        const nw = null
+        const we = null
+        const sw = null
+        const so = null
+        const se = null
 
-        const position = {
-            x: null,
-            y: null
-        }
+        const positionX = posX
+        const positionY = posY
 
         /**
          * Cover is a cosine in the positive quandrant 
@@ -68,7 +68,7 @@ export class HexNode {
          * player goes beyond 0*pi radians, the player
          * is in flanking position and gets a bonus.
          *  */ 
-        const cover = new Enum(0,2,4,6,8,10,12)
+        const cover = new Enum(2,4,6,8,10,12)
     }
 }
 
