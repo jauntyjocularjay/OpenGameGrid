@@ -52,7 +52,6 @@ describe(`Field.mjs`, () => {
                 {expect(node.position.y).to.equal(null)})
             counter++
 
-            console.log('cover is:', node.getCover())
             it(`Test ${counter}: Cover is zero by default`, () => 
                 {expect(node.getCover()).to.equal(0)})
             counter++

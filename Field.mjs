@@ -51,23 +51,41 @@ export class Field {
         }
     }
 
-    linkAll(startingNode){
+    linkAll(start){
         /**
          * @todo fix this
          * faaaaaaaaaaaaaaaaaaaail
          * 
          */
 
-        if(     startingNode.no != null &&
-                startingNode.no.ea != null){
-            startingNode.ne = startingNode.no.ea
-            startingNode.no.ea.sw = startingNode
-            startingNode.no.se = startingNode.ea.nw
-            startingNode.ea.no = startingNode.no.ea
-            startingNode.ea.no.so = startingNode.ea
-            this.linkAll(startingNode.ea)
-            this.linkAll(startingNode.no)
+        if(     start.no != null &&
+                start.no.ea != null){
+            const no = start.no
+            const ea = start.ea
+            const ne = start.no.ea
+            start.ne = ne
+            ne.sw = start
+            ne.so = ea
+            no.se = ea
+            ea.nw = no
+            ea.no = ne
+
+            this.linkAll(start.no)
+            this.linkAll(start.ea)
+        } else if (start.no === null && start.ea != null && start.so != null){
+            
+            const ea = start.ea
+            const se = start.so.ea
+            ea.so = se
+            se.nw = ea
+            this.linkAll(start.ea)
         }
+        // else if (start.no === null && start.ea != null){
+            
+        //     const ea = start.ea
+        //     this.linkAll(start.ea)
+        // }
+
     }
 
     getNode(positionX,positionY){
@@ -105,8 +123,7 @@ export class HexNode {
          * Cover is a modifier on toHit chance
          * units get as a bonus
          *  */ 
-        this.cover = Object.create(new Enum(['zero','half','whole']))
-        console.log('cover is:', this.cover)
+        this.cover = new Enum(['zero','half','whole'])
         // this.setCover('zero')
     }
 
@@ -115,11 +132,11 @@ export class HexNode {
     }
 
     getCover(){
-        if( this.cover === 'ZERO' ){
+        if( this.cover.valueOf() === 'ZERO' ){
             return 0
-        } else if ( this.cover === 'HALF' ){
+        } else if ( this.cover.valueOf() === 'HALF' ){
             return 1
-        } else if ( this.cover === 'WHOLE' ){
+        } else if ( this.cover.valueOf() === 'WHOLE' ){
             return 2
         } else {
             throw new RangeError(`Cover's value is out of range`)
