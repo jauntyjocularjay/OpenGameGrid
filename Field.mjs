@@ -8,11 +8,13 @@ export class Field {
         this.currentNode = this.origin
         this.lastNode = this.origin
 
-        for( let total = 0 ; total < width*depth ; total++ ){
+        for( let total = 1 ; total < width*depth ; total++ ){
             for( let j = 0 ; j < depth-1 ; j++ ){
                 // Traverse the Y axis to get to the correct row 
                 if( this.currentNode.no === null ){
-                    this.currentNode.no = new HexNode(0,j)
+                    this.currentNode.no = new HexNode(
+                        this.currentNode.position.x,
+                        this.currentNode.position.y+1)
                     this.currentNode.no.so = this.currentNode    
                 }
 
@@ -22,10 +24,15 @@ export class Field {
 
             for ( let i = 0 ; i < width-1 ; i++ ){
                 // Traverse the X axis to get to the correct column
+                /**
+                 * @todo
+                 * Figure out why the easterly direction does not seem to link
+                 * the nodes together at the origin.
+                 */
                 if( this.currentNode.ea === null ){
                     this.currentNode.ea = new HexNode(
-                        this.currentNode.position.y, 
-                        this.currentNode.position.x + 1)
+                        this.currentNode.position.x + 1,
+                        this.currentNode.position.y)
                     this.currentNode.ea.we = this.currentNode
                 }
 

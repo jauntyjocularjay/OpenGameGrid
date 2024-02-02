@@ -1,5 +1,5 @@
 import { 
-    // Field,
+    Field,
     HexNode
 } from '../Field.mjs'
 import {
@@ -83,8 +83,11 @@ describe(`Field.mjs`, () => {
 
             expect(field.lastNode).to.equal(null)
             expect(field.currentNode).to.equal(null)
+            console.log('field:', field)
 
             const origin = field.getNode(0,0)
+            expect(origin.ea).to.not.equal(null)
+            expect(origin.no).to.not.equal(null)
         })
         counter++
 
