@@ -83,14 +83,85 @@ describe(`Field.mjs`, () => {
 
             expect(field.lastNode).to.equal(null)
             expect(field.currentNode).to.equal(null)
-            console.log('field:', field)
 
-            const origin = field.getNode(0,0)
-            expect(origin.ea).to.not.equal(null)
-            expect(origin.no).to.not.equal(null)
+            expect(field.origin.ea).to.not.equal(null)
+            expect(field.origin.no).to.not.equal(null)
+            expect(field.origin.ne).to.not.equal(null)
+            expect(field.origin.nw).to.equal(null)
+            expect(field.origin.we).to.equal(null)
+            expect(field.origin.sw).to.equal(null)
+            expect(field.origin.so).to.equal(null)
+            expect(field.origin.se).to.equal(null)
+
+            expect(field.origin.ea.no.we).to.not.equal(null)
+            expect(field.origin.ea.no.so).to.not.equal(null)
+            expect(field.origin.ea.no.sw).to.not.equal(null)
+            expect(field.origin.ea.no.ea).to.equal(null)
+            expect(field.origin.ea.no.se).to.equal(null)
+            expect(field.origin.ea.no.ne).to.equal(null)
+            expect(field.origin.ea.no.no).to.equal(null)
+            expect(field.origin.ea.no.nw).to.equal(null)
+
+
         })
         counter++
 
+        it(`Test ${counter}: A field made up up more than 1 node can use the getNode() method`, () => {
+            const field = new Field(2,2)
+
+            const node = field.getNode(1,1)
+
+            expect(node.position.x).to.eql(1)
+            expect(node.position.y).to.eql(1)
+
+        })
+        counter++
+
+
+        describe(`The center node in a 3x3 field will have all of its links occupied`, () => {
+            const field = new Field(3,3)
+            const center = field.origin.ne
+
+            it(`Test ${counter}: center.east is not null`, () => {
+                expect(center.ea).to.not.equal(null)    
+            })
+            counter++
+
+            it(`Test ${counter}: center.NorthEast is not null`, () => {
+                expect(center.ne).to.not.equal(null)
+            })
+            counter++
+
+            it(`Test ${counter}: center.North is not null`, () => {
+                expect(center.no).to.not.equal(null)    
+            })
+            counter++
+
+            it(`Test ${counter}: center.NorthWest is not null`, () => {
+                expect(center.nw).to.not.equal(null)
+            })
+            counter++
+
+            it(`Test ${counter}: center.West is not null`, () => {
+                expect(center.we).to.not.equal(null)
+            })
+            counter++
+            
+            it(`Test ${counter}: center.SouthWest is not null`, () => {
+                expect(center.sw).to.not.equal(null)
+            })
+            counter++
+            
+            it(`Test ${counter}: center.South is not null`, () => {
+                expect(center.so).to.not.equal(null)
+            })
+            counter++
+            
+            it(`Test ${counter}: center.SouthEast is not null`, () => {
+                expect(center.se).to.not.equal(null)
+            })
+            counter++
+        })
     })
 })
 
