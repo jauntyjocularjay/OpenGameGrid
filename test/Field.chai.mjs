@@ -10,20 +10,53 @@ let counter = 1
 
 describe(`Field.mjs`, () => {
     describe(`HexNodes`, () => {
-        it(`Test ${counter}: HexNodes constructor without arguments.`, () => {
+        describe(`HexNodes constructor without arguments.`, () => {
             const node = new HexNode()
-            expect(node.ea).to.equal(null)
-            expect(node.ne).to.equal(null)
-            expect(node.no).to.equal(null)
-            expect(node.nw).to.equal(null)
-            expect(node.we).to.equal(null)
-            expect(node.sw).to.equal(null)
-            expect(node.so).to.equal(null)
-            expect(node.se).to.equal(null)
-            expect(node.position.x).to.equal(null)
-            expect(node.position.y).to.equal(null)
+            it(`Test ${counter}: East is unoccupied`, () => 
+                {expect(node.ea).to.equal(null)})
+            counter++
+
+            it(`Test ${counter}: NorthEast is unoccupied`, () => 
+                {expect(node.ne).to.equal(null)})
+            counter++
+
+            it(`Test ${counter}: North is unoccupied`, () => 
+                {expect(node.no).to.equal(null)})
+            counter++
+
+            it(`Test ${counter}: NorthWest is unoccupied`, () => 
+                {expect(node.nw).to.equal(null)})
+            counter++
+
+            it(`Test ${counter}: West is unoccupied`, () => 
+                {expect(node.we).to.equal(null)})
+            counter++
+
+            it(`Test ${counter}: SouthWest is unoccupied`, () => 
+                {expect(node.sw).to.equal(null)})
+            counter++
+
+            it(`Test ${counter}: South is unoccupied`, () => 
+                {expect(node.so).to.equal(null)})
+            counter++
+
+            it(`Test ${counter}: SouthEast is unoccupied`, () => 
+                {expect(node.se).to.equal(null)})
+            counter++
+
+            it(`Test ${counter}: position.x is nulled`, () => 
+                {expect(node.position.x).to.equal(null)})
+            counter++
+
+            it(`Test ${counter}: Position Y is nulled`, () => 
+                {expect(node.position.y).to.equal(null)})
+            counter++
+
+            console.log('cover is:', node.getCover())
+            it(`Test ${counter}: Cover is zero by default`, () => 
+                {expect(node.getCover()).to.equal(0)})
+            counter++
         })
-        counter++
 
         it(`Test ${counter}: HexNode constructor at origin`, () => {
             const node = new HexNode(0,0)
@@ -78,33 +111,103 @@ describe(`Field.mjs`, () => {
         })
         counter++
 
-        it(`Test ${counter}: A field made up up more than 1 node`, () => {
+        describe(`A field made up up more than 1 node`, () => {
             const field = new Field(2,2)
 
-            expect(field.lastNode).to.equal(null)
-            expect(field.currentNode).to.equal(null)
+            it(`Test ${counter}: lastNode is nulled`, () => {
+                expect(field.lastNode).to.equal(null)
+            })
+            counter++
 
-            expect(field.origin.ea).to.not.equal(null)
-            expect(field.origin.no).to.not.equal(null)
-            expect(field.origin.ne).to.not.equal(null)
-            expect(field.origin.nw).to.equal(null)
-            expect(field.origin.we).to.equal(null)
-            expect(field.origin.sw).to.equal(null)
-            expect(field.origin.so).to.equal(null)
-            expect(field.origin.se).to.equal(null)
+            it(`Test ${counter}: currentNode is nulled`, () => {
+                expect(field.currentNode).to.equal(null)
+            })
+            counter++
 
-            expect(field.origin.ea.no.we).to.not.equal(null)
-            expect(field.origin.ea.no.so).to.not.equal(null)
-            expect(field.origin.ea.no.sw).to.not.equal(null)
-            expect(field.origin.ea.no.ea).to.equal(null)
-            expect(field.origin.ea.no.se).to.equal(null)
-            expect(field.origin.ea.no.ne).to.equal(null)
-            expect(field.origin.ea.no.no).to.equal(null)
-            expect(field.origin.ea.no.nw).to.equal(null)
+            it(`Test ${counter}: origin.east is occupied`, () => {
+                expect(field.origin.ea).to.not.equal(null)
+            })
+            counter++
+            
+            it(`Test ${counter}: origin.north is occupied`, () => {
+                expect(field.origin.no).to.not.equal(null)
+            })
+            counter++
+            
+            it(`Test ${counter}: origin.NorthEast is occupied`, () => {
+                expect(field.origin.ne).to.not.equal(null)
+            })
+            counter++
+            
+            it(`Test ${counter}: origin.NorthWest is not occupied`, () => {
+                expect(field.origin.nw).to.equal(null)
+            })
+            counter++
+           
+            it(`Test ${counter}: origin.West is not occupied`, () => {
+                expect(field.origin.we).to.equal(null)
+            })
+            counter++
+            
+            it(`Test ${counter}: origin.SouthWest is not occupied`, () => {
+                expect(field.origin.sw).to.equal(null)
+            })
+            counter++
+            
+            it(`Test ${counter}: origin.South is not occupied`, () => {
+                expect(field.origin.so).to.equal(null)
+            })
+            counter++
+            
+            it(`Test ${counter}: origin.SouthEast is not occupied`, () => {
+                expect(field.origin.se).to.equal(null)
+            })
+            counter++
+            
+
+            it(`Test ${counter}: origin north east node, west connects`, () => {
+                expect(field.origin.ea.no.we).to.not.equal(null)
+            })
+            counter++
+            
+            it(`Test ${counter}: origin north east node, south connects`, () => {
+                expect(field.origin.ea.no.so).to.not.equal(null)
+            })
+            counter++
+            
+            it(`Test ${counter}: origin northeast node, southwest connects`, () => {
+                expect(field.origin.ea.no.sw).to.not.equal(null)
+            })
+            counter++
+            
+            it(`Test ${counter}: origin northeast node, east is unoccupied`, () => {
+                expect(field.origin.ea.no.ea).to.equal(null)
+            })
+            counter++
+            
+            it(`Test ${counter}: origin northeast node, south-east is unoccupied`, () => {
+                expect(field.origin.ea.no.se).to.equal(null)
+            })
+            counter++
+            
+            it(`Test ${counter}: origin northeast node, north east is unoccupied`, () => {
+                expect(field.origin.ea.no.ne).to.equal(null)
+            })
+            counter++
+            
+            it(`Test ${counter}: origin northeast node, north is unoccupied`, () => {
+                expect(field.origin.ea.no.no).to.equal(null)
+            })
+            counter++
+            
+            it(`Test ${counter}: origin northeast node, northwest is unoccupied`, () => {
+                expect(field.origin.ea.no.nw).to.equal(null)
+            })
+            counter++
+            
 
 
         })
-        counter++
 
         it(`Test ${counter}: A field made up up more than 1 node can use the getNode() method`, () => {
             const field = new Field(2,2)

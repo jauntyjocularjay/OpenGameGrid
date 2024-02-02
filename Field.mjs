@@ -83,27 +83,18 @@ export class Field {
 
         return this.currentNode
     }
-
 }
 
 export class HexNode {
     constructor( posX=null, posY=null ){
-            this.ea = null,
-            this.ne = null
-            this.no = null
-            this.nw = null
-            this.we = null
-            this.sw = null
-            this.so = null
-            this.se = null
-
-/**
- * nw no ne
- * we    ea
- * sw so se
- * 
- */
-
+        this.ea = null
+        this.ne = null
+        this.no = null
+        this.nw = null
+        this.we = null
+        this.sw = null
+        this.so = null
+        this.se = null
 
         this.position = {
             x: posX,
@@ -111,14 +102,29 @@ export class HexNode {
         }
 
         /**
-         * Cover is a cosine in the positive quandrant 
-         * that determines the aim modifier on a hit 
-         * roll. As a player approaches 0/12*pi radians
-         * a player comes into flanking range. If a 
-         * player goes beyond 0*pi radians, the player
-         * is in flanking position and gets a bonus.
+         * Cover is a modifier on toHit chance
+         * units get as a bonus
          *  */ 
-        const cover = new Enum([0,1,2])
+        this.cover = Object.create(new Enum(['zero','half','whole']))
+        console.log('cover is:', this.cover)
+        // this.setCover('zero')
+    }
+
+    setCover( str ){
+        this.cover.select(str)
+    }
+
+    getCover(){
+        if( this.cover === 'ZERO' ){
+            return 0
+        } else if ( this.cover === 'HALF' ){
+            return 1
+        } else if ( this.cover === 'WHOLE' ){
+            return 2
+        } else {
+            throw new RangeError(`Cover's value is out of range`)
+        }
     }
 }
+
 
