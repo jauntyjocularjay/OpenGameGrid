@@ -1,0 +1,3 @@
+[submodule "libs/EnumJS"]
+	path = libs/EnumJS
+	url = https://github.com/GeorgeSchafer/EnumJS.git

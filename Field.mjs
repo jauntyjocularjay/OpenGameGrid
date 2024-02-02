@@ -1,63 +1,76 @@
-
+import {
+    Enum
+} from './libs/EnumJS/ENUM.mjs'
 
 export class Field {
     constructor(width, depth){
-        const origin = new HexNode(0, 0)
-        const currentNode = origin
-        const lastNode = origin
+        this.origin = new HexNode(0,0)
+        this.currentNode = this.origin
+        this.lastNode = this.origin
 
-        for( let i = 0 ; i < width ; i++ ){
-            // Traverse the Y axis to start the loop again
-            for( let k = 0 ; k < width ; k++ ){
-                lastNode = currentNode
-                currentNode = origin.c
-            }
-
+        for( let total = 0 ; total < width*depth ; total++ ){
             for( let j = 0 ; j < depth-1 ; j++ ){
-                currentNode.a = new HexNode(j,i)
-                lastNode = currentNode
-                currentNode = currentNode.a
+                // Traverse the Y axis to get to the correct row 
+                if( this.currentNode.no === null ){
+                    this.currentNode.no = new HexNode(0,j)
+                    this.currentNode.no.so = this.currentNode    
+                }
+
+                this.currentNode = this.currentNode.no
+                
             }
 
-            currentNode = origin
+            for ( let i = 0 ; i < width-1 ; i++ ){
+                // Traverse the X axis to get to the correct column
+                if( this.currentNode.ea === null ){
+                    this.currentNode.ea = new HexNode(
+                        this.currentNode.position.y, 
+                        this.currentNode.position.x + 1)
+                    this.currentNode.ea.we = this.currentNode
+                }
 
-            currentNode.c = new HexNode(j+1,i)
-            lastNode = currentNode
-            currentNode = currentNode.c
+                this.currentNode = this.currentNode.ea
+            }
         }
+
+        this.currentNode = null
+        this.lastNode = null
     }
 
-    getNode(x,y){
-        let x = x-1;
-        let y = y-1;
-        let currentNode = this.origin;
+    getNode(positionX,positionY){
+        let posX = positionX - 1
+        let posY = positionY - 1
+        this.currentNode = this.origin;
 
-        for( let i = 0 ; i < x ; i++ ){
-            currentNode = currentNode.a
+        for( let i = 0 ; i < posX ; i++ ){
+            this.currentNode = this.currentNode.ea
         }
-        for( let i = 0 ; i < y ; i++ ){
-            currentNode = currentNode.c
+        for( let i = 0 ; i < posY ; i++ ){
+            this.currentNode = this.currentNode.no
         }
 
-        return currentNode
+        this.currentNode = null
+        this.lastNode = null
+
+        return this.currentNode
     }
 
 }
 
 export class HexNode {
-    constructor( x=null, y=null ){
-        const link = {
-            a: null,
-            b: null,
-            c: null,
-            d: null,
-            e: null,
-            f: null
-        }
+    constructor( posX=null, posY=null ){
+            this.ea = null,
+            this.ne = null
+            this.no = null
+            this.nw = null
+            this.we = null
+            this.sw = null
+            this.so = null
+            this.se = null
 
-        const position = {
-            x: null,
-            y: null
+        this.position = {
+            x: posX,
+            y: posY
         }
 
         /**
@@ -68,7 +81,7 @@ export class HexNode {
          * player goes beyond 0*pi radians, the player
          * is in flanking position and gets a bonus.
          *  */ 
-        const cover = new Enum(0,2,4,6,8,10,12)
+        const cover = new Enum([0,1,2])
     }
 }
 
