@@ -1,0 +1,27 @@
+{
+  "dependencies": {
+    "chai": "^5.0.3",
+    "mocha": "^10.2.0"
+  },
+  "name": "openhex",
+  "version": "0.0.1",
+  "description": "An open source play field for strategy games.",
+  "main": "Field.mjs",
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "mocha test --exit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GeorgeSchafer/OpenHex.git"
+  },
+  "author": "GeorgeSchafer",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/GeorgeSchafer/OpenHex/issues"
+  },
+  "homepage": "https://github.com/GeorgeSchafer/OpenHex#readme"
+}
