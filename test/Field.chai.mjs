@@ -110,6 +110,20 @@ describe(`Field.mjs`, () => {
         })
         counter++
 
+        it(`Test ${counter}: A field made up of more than 1 node can use the getNode() method`, () => {
+            const field = new Field(2, 2);
+        
+            const node11 = field.getNode(1, 1);
+            const node22 = field.getNode(2, 2);
+        
+            expect(node11.position.x).to.eql(1);
+            expect(node11.position.y).to.eql(1);
+        
+            expect(node22.position.x).to.eql(2);
+            expect(node22.position.y).to.eql(2);
+        });
+        counter++;
+
         describe(`A field made up up more than 1 node`, () => {
             const field = new Field(2,2)
 

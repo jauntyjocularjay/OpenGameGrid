@@ -51,60 +51,63 @@ export class Field {
         }
     }
 
-    linkAll(start){
-        /**
-         * @todo fix this
-         * faaaaaaaaaaaaaaaaaaaail
-         * 
-         */
-
-        if(     start.no != null &&
-                start.no.ea != null){
-            const no = start.no
-            const ea = start.ea
-            const ne = start.no.ea
-            start.ne = ne
-            ne.sw = start
-            ne.so = ea
-            no.se = ea
-            ea.nw = no
-            ea.no = ne
-
-            this.linkAll(start.no)
-            this.linkAll(start.ea)
-        } else if (start.no === null && start.ea != null && start.so != null){
-            
-            const ea = start.ea
-            const se = start.so.ea
-            ea.so = se
-            se.nw = ea
-            this.linkAll(start.ea)
+    linkAll(start) {
+        if (start !== null && start.position !== undefined) {
+            console.log(`Connecting nodes at position ${start.position.x},${start.position.y}`);
+            const no = start.no;
+            const ea = start.ea;
+            const so = start.so;
+            const we = start.we;
+    
+            if (no !== null) {
+                start.ne = no.ea;
+                start.nw = no.we;
+            }
+    
+            if (ea !== null) {
+                start.se = ea.so;
+                start.ne = ea.no;
+            }
+    
+            if (so !== null) {
+                start.sw = so.we;
+                start.se = so.ea;
+            }
+    
+            if (we !== null) {
+                start.sw = we.so;
+                start.nw = we.no;
+            }
+    
+            this.linkAll(start.no);
+            this.linkAll(start.ea);
         }
-        // else if (start.no === null && start.ea != null){
-            
-        //     const ea = start.ea
-        //     this.linkAll(start.ea)
-        // }
-
     }
+    
+    
 
-    getNode(positionX,positionY){
+    getNode(positionX, positionY) {
         this.currentNode = this.origin;
-
-        for( let i = 0 ; i < positionX ; i++ ){
-            this.currentNode = this.currentNode.ea
+    
+        for (let i = 1; i < positionX; i++) {
+            this.currentNode = this.currentNode.ea;
         }
-
-        for( let i = 0 ; i < positionY ; i++ ){
-            this.currentNode = this.currentNode.no
+    
+        for (let i = 1; i < positionY; i++) {
+            this.currentNode = this.currentNode.no;
         }
-
-        return this.currentNode
+    
+        console.log(`Node at (${positionX}, ${positionY}):`, this.currentNode);
+    
+        return this.currentNode;
     }
+    
 }
 
 export class HexNode {
     constructor( posX=null, posY=null ){
+        // console.log(`Creating HexNode at position ${posX},${posY}`);
+
         this.ea = null
         this.ne = null
         this.no = null
