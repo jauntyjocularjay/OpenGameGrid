@@ -121,14 +121,22 @@ function directionIs(node, direction, value=null){
 }
 
 function allDirectionsAre(node, value=null){
-    directionIs(node, 'ea')
-    directionIs(node, 'ne')
-    directionIs(node, 'no')
-    directionIs(node, 'nw')
-    directionIs(node, 'we')
-    directionIs(node, 'sw')
-    directionIs(node, 'so')
-    directionIs(node, 'se')
+    const directionArray = [
+            'ea',
+            'ne',
+            'no',
+            'nw',
+            'we',
+            'sw',
+            'so',
+            'se'
+        ]
+
+    theseDirectionsAre(node, directionArray, value=null){
+        directionArray.forEach(direction => {
+            directionIs(node,direction,value)
+        })
+    }
 }
 
 function theseDirectionsAre(node, directionArray, value=null){
@@ -160,14 +168,20 @@ function directionIsNot(node, direction, value=null){
 }
 
 function allDirectionsAreNot(node, value=null){
-    directionIsNot(node, 'ea')
-    directionIsNot(node, 'ne')
-    directionIsNot(node, 'no')
-    directionIsNot(node, 'nw')
-    directionIsNot(node, 'we')
-    directionIsNot(node, 'sw')
-    directionIsNot(node, 'so')
-    directionIsNot(node, 'se')
+    const directionArray = [
+        'ea',
+        'ne',
+        'no',
+        'nw',
+        'we',
+        'sw',
+        'so',
+        'se'
+    ]
+    
+    directionArray.forEach( direction => {
+        directionIsNot(node, direction)
+    })
 }
 
 function theseDirectionsAreNot(node, directionArray, value=null){
