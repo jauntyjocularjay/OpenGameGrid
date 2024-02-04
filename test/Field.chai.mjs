@@ -46,23 +46,20 @@ describe(`Field.mjs`, () => {
         describe(`A field made up of more than 1 node can use the Field.getNode() method`, () => {
             const field = new Field(2, 2);
         
-            /**
-             * @todo
-             * Fix the Field.getNode() method
-             */
-            let node11;
-            let node22;
-            // const node11 = field.getNode(1, 1)
-            // const node22 = field.getNode(2, 2)
+            const node01 = field.getNode(0, 1)
+            const node10 = field.getNode(1, 0)
+            const node11 = field.getNode(1, 1)
         
-            positionIs(node11,1,1)
-            positionIs(node22,2,2)
+            positionIs(node01, 0, 1)
+            positionIs(node10, 1, 0)
+            positionIs(node11, 1, 1)
         })
 
         describe(`A field made up up more than 1 node`, () => {
             const field = new Field(2,2)
             const origin = field.origin
             const ne = field.origin.ne
+
             let directions = [
                 'we',
                 'nw',
@@ -77,15 +74,22 @@ describe(`Field.mjs`, () => {
             directionIsNot(origin, 'no')
 
             directions = [
+                'ea',
+                'ne',
+                'no',
                 'nw',
-                'we',
-                'sw',
-                'so',
                 'se'
             ]
             
-            directionIsNot(ne, 'ne')
             theseDirectionsAre(ne, directions)
+
+            directions = [
+                'we',
+                'sw',
+                'so'
+            ]
+
+            theseDirectionsAreNot(ne, directions)
 
         })
 

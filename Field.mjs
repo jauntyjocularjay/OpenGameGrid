@@ -11,14 +11,15 @@ export class Field {
         this.origin = new HexNode(0,0,'origin')
         this.linkEasterly(this.origin, width)
         this.linkNortherly(this.origin, width, depth)
+        this.linkAll(this.origin)
     }
 
-    linkEasterly(node, width){
+    linkEasterly(node, width, j=0){
         let currentNode = node
         let lastNode = null
 
         for( let i = 1; i < width ; i++ ){
-            currentNode.ea = new HexNode(0,i)
+            currentNode.ea = new HexNode(i,j)
             lastNode = currentNode
             currentNode = currentNode.ea
             currentNode.we = lastNode
@@ -29,35 +30,76 @@ export class Field {
         let currentNode = node
         let lastNode = null
         for( let j = 1 ; j < depth ; j++ ){
-            currentNode.no = new HexNode(j,0)
+            currentNode.no = new HexNode(0,j)
             lastNode = currentNode
             currentNode = currentNode.no
             currentNode.so = lastNode
-            this.linkEasterly(currentNode, width)
+            this.linkEasterly(currentNode, width, j)
         }
     }
 
     linkAll(start) {
+        this.linkXYPositive(start)
+        this.linkYPositive(start)
+        this.linkXYNegative(start)
+        
+        if( start.no !== null ){
+            this.linkAll(start.no)
+        }
+
+        if( start.ea !== null ){
+            this.linkAll(start.ea)
+        }
+    }
+
+    linkXYPositive(start){
+        if(start.no !== null && start.no.ea !== null){
+            start.ne = start.no.ea
+            start.no.ea.sw = start
+        }
+    }
+
+    linkYPositive(start){
+        if(start.no !== null && start.no.ea !== null && start.ea !== null){
+            start.ea.no = start.no.ea
+            start.no.ea.so = start.ea
+        }
+    }
+
+    linkXYNegative(start){
+        if(start.no !== null && start.ea !== null){
+            start.no.se = start.ea
+            start.ea.nw = start.no
+        }
     }
 
     getNode(positionX, positionY) {
         let currentNode = this.origin
-        for( let j = 0 ; j <= positionY; j++ ){
-            for( let i = 0 ; i < positionX ; i++ ){
+
+        if(currentNode.no !== null){
+            for( let j = 0 ; j < positionY; j++ ){
                 currentNode = currentNode.no
             }
-            currentNode = currentNode.ea
         }
 
-        return currentNode
+        if(currentNode.ea !== null){
+            for( let i = 0 ; i < positionX ; i++ ){
+                currentNode = currentNode.ea
+            }
+        }
+
+        if(currentNode.position.x === positionX && currentNode.position.y === positionY){
+            return currentNode
+        } else {
+            throw RangeError('Out Of Bounds: the selected position is not on the field.')
+        }
+
     }
 
 }
 
 export class HexNode {
-    constructor( posX=null, posY=null, alias='node' ){
-        this.alias = alias
-
+    constructor( posX=null, posY=null){
         this.ea = null
         this.ne = null
         this.no = null
@@ -72,6 +114,12 @@ export class HexNode {
             y: posY
         }
 
+        this.alias = null
+
+        this.position.x === null && this.position.y === null
+            ? this.alias = 'node'
+            : this.alias = `(${this.position.x}, ${this.position.y})`
+
         /**
          * Cover is a modifier on toHit chance
          * units get as a bonus
@@ -80,8 +128,16 @@ export class HexNode {
         // this.setCover('zero')
     }
 
-    setCover( str ){
-        this.cover.select(str)
+    setCover( cover ){
+        if( typeof cover === 'string'){
+            this.cover.select(cover)
+        } else if( cover === 0 ){
+            this.cover.select('ZERO')
+        } else if( cover === 1 ){
+            this.cover.select('ONE')
+        } else if( cover === 2 ){
+            this.cover.select('ONE')
+        }
     }
 
     getCover(){
