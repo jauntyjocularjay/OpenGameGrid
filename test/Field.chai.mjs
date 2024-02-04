@@ -132,11 +132,7 @@ function allDirectionsAre(node, value=null){
             'se'
         ]
 
-    theseDirectionsAre(node, directionArray, value=null){
-        directionArray.forEach(direction => {
-            directionIs(node,direction,value)
-        })
-    }
+    theseDirectionsAre(node, directionArray, value=null)
 }
 
 function theseDirectionsAre(node, directionArray, value=null){
@@ -179,9 +175,7 @@ function allDirectionsAreNot(node, value=null){
         'se'
     ]
     
-    directionArray.forEach( direction => {
-        directionIsNot(node, direction)
-    })
+    theseDirectionsAreNot(node, directionArray, value)
 }
 
 function theseDirectionsAreNot(node, directionArray, value=null){
