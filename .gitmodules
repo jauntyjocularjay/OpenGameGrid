@@ -1,3 +1,6 @@
 [submodule "libs/EnumJS"]
 	path = libs/EnumJS
 	url = https://github.com/GeorgeSchafer/EnumJS.git
+[submodule "kg"]
+	path = kg
+	url = https://github.com/GeorgeSchafer/KwikGit.git
