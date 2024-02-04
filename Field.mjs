@@ -4,15 +4,37 @@ import {
 
 export class Field {
     constructor(width, depth){
+        if( width < 1 || depth < 1){
+            throw new RangeError('Width and Depth must be greater than 1.')
+        }
+
         this.origin = new HexNode(0,0)
-        this.currentNode = this.origin
-        this.lastNode = this.origin
+        this.linkEasterly(this.origin, width)
+        this.linkNortherly(this.origin, width, depth)
     }
 
-    linkEasterly(startingNode, width){
+    linkEasterly(node, width){
+        let currentNode = node
+        let lastNode = null
+
+        for( let i = 1; i <= width ; i++ ){
+            currentNode.ea = new HexNode(0,i)
+            lastNode = currentNode
+            currentNode = currentNode.ea
+            currentNode.we = lastNode
+        }
     }
 
-    linkNortherly(startingNode, width, depth){
+    linkNortherly(node, width, depth){
+        let currentNode = node
+        let lastNode = null
+        for( let j = 1 ; j <= depth ; j++ ){
+            currentNode.no = new HexNode(j,0)
+            lastNode = currentNode
+            currentNode = currentNode.no
+            currentNode.so = lastNode
+            this.linkEasterly(currentNode, width)
+        }
     }
 
     linkAll(start) {
@@ -21,6 +43,15 @@ export class Field {
     
 
     getNode(positionX, positionY) {
+        let currentNode = this.origin
+        for( let j = 0 ; j <= positionY; j++ ){
+            for( let i = 0 ; i < positionX ; i++ ){
+                currentNode = currentNode.no
+            }
+            currentNode = currentNode.ea
+        }
+
+        return currentNode
     }
     
 }

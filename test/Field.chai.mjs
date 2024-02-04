@@ -1,3 +1,5 @@
+'use debugger'
+
 import { 
     Field,
     HexNode
@@ -89,26 +91,29 @@ describe(`Field.mjs`, () => {
     })
 
     describe(`Field`, () => {
-        it(`Test ${counter}: A field is made up of at least one node.`, () => {
+        describe(`A field is made up of at least one node.`, () => {
             const field = new Field(1,1)
             
-            expect(field.origin.ea).to.equal(null)
-            expect(field.origin.ne).to.equal(null)
-            expect(field.origin.no).to.equal(null)
-            expect(field.origin.nw).to.equal(null)
-            expect(field.origin.we).to.equal(null)
-            expect(field.origin.sw).to.equal(null)
-            expect(field.origin.so).to.equal(null)
-            expect(field.origin.se).to.equal(null)
+            it(`Test ${counter}: The only node's links are all nulled`, () => {
+                expect(field.origin.ea).to.equal(null)
+                expect(field.origin.ne).to.equal(null)
+                expect(field.origin.no).to.equal(null)
+                expect(field.origin.nw).to.equal(null)
+                expect(field.origin.we).to.equal(null)
+                expect(field.origin.sw).to.equal(null)
+                expect(field.origin.so).to.equal(null)
+                expect(field.origin.se).to.equal(null)
+            })
+            counter++
 
-            expect(field.origin.position.x).to.equal(0)
-            expect(field.origin.position.y).to.equal(0)
-
-            expect(field.lastNode).to.equal(null)
-            expect(field.currentNode).to.equal(null)
+            it(`Test ${counter}: The origin is located at 0,0: ` +
+               `${field.origin.position.x},${field.origin.position.y})`, () => {
+                expect(field.origin.position.x).to.equal(0)
+                expect(field.origin.position.y).to.equal(0)
+            })
+            counter++
 
         })
-        counter++
 
         it(`Test ${counter}: A field made up of more than 1 node can use the getNode() method`, () => {
             const field = new Field(2, 2);
