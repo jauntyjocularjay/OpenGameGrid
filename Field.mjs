@@ -17,7 +17,7 @@ export class Field {
         let currentNode = node
         let lastNode = null
 
-        for( let i = 1; i <= width ; i++ ){
+        for( let i = 1; i < width ; i++ ){
             currentNode.ea = new HexNode(0,i)
             lastNode = currentNode
             currentNode = currentNode.ea
@@ -28,7 +28,7 @@ export class Field {
     linkNortherly(node, width, depth){
         let currentNode = node
         let lastNode = null
-        for( let j = 1 ; j <= depth ; j++ ){
+        for( let j = 1 ; j < depth ; j++ ){
             currentNode.no = new HexNode(j,0)
             lastNode = currentNode
             currentNode = currentNode.no

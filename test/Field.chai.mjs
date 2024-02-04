@@ -36,31 +36,28 @@ describe(`Field.mjs`, () => {
     })
 
     describe(`Field`, () => {
-        describe(`A field is made up of at least one node.`, () => {
+        describe(`A field of one node's links are all nulled`, () => {
             const field = new Field(1,1)
             const origin = field.origin
-
-            describe(`A field of one node's links are all nulled`, () => {
-                allDirectionsAre(origin)
-                positionIs(origin, 0, 0)
-            })
-            counter++
-
+            allDirectionsAre(origin)
+            positionIs(origin, 0, 0)
         })
 
-        it(`Test ${counter}: A field made up of more than 1 node can use the getNode() method`, () => {
+        describe(`A field made up of more than 1 node can use the Field.getNode() method`, () => {
             const field = new Field(2, 2);
         
-            const node11 = field.getNode(1, 1);
-            const node22 = field.getNode(2, 2);
+            /**
+             * @todo
+             * Fix the Field.getNode() method
+             */
+            let node11;
+            let node22;
+            // const node11 = field.getNode(1, 1)
+            // const node22 = field.getNode(2, 2)
         
-            expect(node11.position.x).to.eql(1);
-            expect(node11.position.y).to.eql(1);
-        
-            expect(node22.position.x).to.eql(2);
-            expect(node22.position.y).to.eql(2);
-        });
-        counter++;
+            positionIs(node11,1,1)
+            positionIs(node22,2,2)
+        })
 
         describe(`A field made up up more than 1 node`, () => {
             const field = new Field(2,2)
@@ -89,86 +86,17 @@ describe(`Field.mjs`, () => {
             
             directionIsNot(ne, 'ne')
             theseDirectionsAre(ne, directions)
-            
-            it(`Test ${counter}: origin.NorthEast is occupied`, () => {
-                expect(field.origin.ne).to.not.equal(null)
-            })
-            counter++
-            
-
-            it(`Test ${counter}: origin north east node, west connects`, () => {
-                expect(field.origin.ea.no.we).to.not.equal(null)
-            })
-            counter++
-            
-            it(`Test ${counter}: origin north east node, south connects`, () => {
-                expect(field.origin.ea.no.so).to.not.equal(null)
-            })
-            counter++
-            
-            it(`Test ${counter}: origin northeast node, southwest connects`, () => {
-                expect(field.origin.ea.no.sw).to.not.equal(null)
-            })
-            counter++
-            
-            it(`Test ${counter}: origin northeast node, east is unoccupied`, () => {
-                expect(field.origin.ea.no.ea).to.equal(null)
-            })
-            counter++
-            
-            it(`Test ${counter}: origin northeast node, south-east is unoccupied`, () => {
-                expect(field.origin.ea.no.se).to.equal(null)
-            })
-            counter++
-            
-            it(`Test ${counter}: origin northeast node, north east is unoccupied`, () => {
-                expect(field.origin.ea.no.ne).to.equal(null)
-            })
-            counter++
-            
-            it(`Test ${counter}: origin northeast node, north is unoccupied`, () => {
-                expect(field.origin.ea.no.no).to.equal(null)
-            })
-            counter++
-            
-            it(`Test ${counter}: origin northeast node, northwest is unoccupied`, () => {
-                expect(field.origin.ea.no.nw).to.equal(null)
-            })
-            counter++
-            
-
 
         })
-
-        it(`Test ${counter}: A field made up up more than 1 node can use the getNode() method`, () => {
-            const field = new Field(2,2)
-
-            const node = field.getNode(1,1)
-
-            expect(node.position.x).to.eql(1)
-            expect(node.position.y).to.eql(1)
-            positionIs(node, 1)
-
-        })
-        counter++
-
 
         describe(`The center node in a 3x3 field will have all of its links occupied`, () => {
             const field = new Field(3,3)
             const center = field.origin.ne
 
-            directionIsNot(center, 'ea')
-            directionIsNot(center, 'ne')
-            directionIsNot(center, 'no')
-            directionIsNot(center, 'nw')
-            directionIsNot(center, 'we')
-            directionIsNot(center, 'sw')
-            directionIsNot(center, 'so')
-            directionIsNot(center, 'se')
+            allDirectionsAreNot(center)
         })
     })
 })
-
 
 function directionIs(node, direction, value=null){
     try {
@@ -184,7 +112,7 @@ function directionIs(node, direction, value=null){
         // console.error(error)
         const directionString = expandDirection(direction)
 
-        it(`Test ${counter}: node.${directionString} is ${value}`, () => {
+        it(`Test ${counter}: node.${directionString} is ${value} threw an error`, () => {
             expect(false).to.eql(true)
         })
 
@@ -223,7 +151,7 @@ function directionIsNot(node, direction, value=null){
         // console.error(error)
         const directionString = expandDirection(direction)
 
-        it(`Test ${counter}: node.${directionString} is NOT ${value}`, () => {
+        it(`Test ${counter}: node.${directionString} is NOT ${value} threw an error`, () => {
             expect(true).to.eql(false)
         })
     
@@ -262,12 +190,12 @@ function positionIs(node, intX=null, intY=null){
         counter++
     } catch(error) {
         // console.error(error)
-        it(`Test ${counter}: node.position.x is ${intX}`, () => {
+        it(`Test ${counter}: node.position.x is ${intX} threw an error`, () => {
             expect(false).to.eql(true)
         })
         counter++
 
-        it(`Test ${counter}: node.position.y is ${intY}`, () => {
+        it(`Test ${counter}: node.position.y is ${intY} threw an error`, () => {
             expect(false).to.eql(true)
         })
         counter++
@@ -282,7 +210,7 @@ function coverIs(node, int=0){
         counter++
     } catch(error) {
         // console.log(error)
-        it(`Test ${counter}: Cover is ${int}`, () => {
+        it(`Test ${counter}: Cover is ${int} threw an error`, () => {
             expect(true).to.equal(false)
         })
         counter++
