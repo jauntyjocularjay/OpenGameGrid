@@ -257,8 +257,6 @@ function nullCheck(node){
     }
 }
 
-
-
 /**
 
 describe(``, () => {

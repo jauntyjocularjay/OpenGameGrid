@@ -39,8 +39,6 @@ export class Field {
 
     linkAll(start) {
     }
-    
-    
 
     getNode(positionX, positionY) {
         let currentNode = this.origin
@@ -53,7 +51,7 @@ export class Field {
 
         return currentNode
     }
-    
+
 }
 
 export class HexNode {
