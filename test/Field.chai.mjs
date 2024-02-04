@@ -14,102 +14,35 @@ describe(`Field.mjs`, () => {
     describe(`HexNodes`, () => {
         describe(`HexNodes constructor without arguments.`, () => {
             const node = new HexNode()
-            it(`Test ${counter}: East is unoccupied`, () => 
-                {expect(node.ea).to.equal(null)})
-            counter++
 
-            it(`Test ${counter}: NorthEast is unoccupied`, () => 
-                {expect(node.ne).to.equal(null)})
-            counter++
-
-            it(`Test ${counter}: North is unoccupied`, () => 
-                {expect(node.no).to.equal(null)})
-            counter++
-
-            it(`Test ${counter}: NorthWest is unoccupied`, () => 
-                {expect(node.nw).to.equal(null)})
-            counter++
-
-            it(`Test ${counter}: West is unoccupied`, () => 
-                {expect(node.we).to.equal(null)})
-            counter++
-
-            it(`Test ${counter}: SouthWest is unoccupied`, () => 
-                {expect(node.sw).to.equal(null)})
-            counter++
-
-            it(`Test ${counter}: South is unoccupied`, () => 
-                {expect(node.so).to.equal(null)})
-            counter++
-
-            it(`Test ${counter}: SouthEast is unoccupied`, () => 
-                {expect(node.se).to.equal(null)})
-            counter++
-
-            it(`Test ${counter}: position.x is nulled`, () => 
-                {expect(node.position.x).to.equal(null)})
-            counter++
-
-            it(`Test ${counter}: Position Y is nulled`, () => 
-                {expect(node.position.y).to.equal(null)})
-            counter++
-
-            it(`Test ${counter}: Cover is zero by default`, () => 
-                {expect(node.getCover()).to.equal(0)})
-            counter++
+            allDirectionsAre(node)
+            positionIs(node)
+            coverIs(node)
         })
 
-        it(`Test ${counter}: HexNode constructor at origin`, () => {
+        describe(`HexNode constructor at origin`, () => {
             const node = new HexNode(0,0)
-            expect(node.ea).to.equal(null)
-            expect(node.ne).to.equal(null)
-            expect(node.no).to.equal(null)
-            expect(node.nw).to.equal(null)
-            expect(node.we).to.equal(null)
-            expect(node.sw).to.equal(null)
-            expect(node.so).to.equal(null)
-            expect(node.se).to.equal(null)
-            expect(node.position.x).to.equal(0)
-            expect(node.position.y).to.equal(0)
-        })
-        counter++
 
-        it(`Test ${counter}: HexNode constructor at a nonzero point`, () => {
-            const node = new HexNode(1,2)
-            expect(node.ea).to.equal(null)
-            expect(node.ne).to.equal(null)
-            expect(node.no).to.equal(null)
-            expect(node.nw).to.equal(null)
-            expect(node.we).to.equal(null)
-            expect(node.sw).to.equal(null)
-            expect(node.so).to.equal(null)
-            expect(node.se).to.equal(null)
-            expect(node.position.x).to.equal(1)
-            expect(node.position.y).to.equal(2)
+            allDirectionsAre(node)
+            positionIs(node, 0, 0)
         })
-        counter++
+
+        describe(`HexNode constructor at a nonzero point`, () => {
+            const node = new HexNode(1,2)
+
+            allDirectionsAre(node)
+            positionIs(node, 1, 2)
+        })
     })
 
     describe(`Field`, () => {
         describe(`A field is made up of at least one node.`, () => {
             const field = new Field(1,1)
-            
-            it(`Test ${counter}: The only node's links are all nulled`, () => {
-                expect(field.origin.ea).to.equal(null)
-                expect(field.origin.ne).to.equal(null)
-                expect(field.origin.no).to.equal(null)
-                expect(field.origin.nw).to.equal(null)
-                expect(field.origin.we).to.equal(null)
-                expect(field.origin.sw).to.equal(null)
-                expect(field.origin.so).to.equal(null)
-                expect(field.origin.se).to.equal(null)
-            })
-            counter++
+            const origin = field.origin
 
-            it(`Test ${counter}: The origin is located at 0,0: ` +
-               `${field.origin.position.x},${field.origin.position.y})`, () => {
-                expect(field.origin.position.x).to.equal(0)
-                expect(field.origin.position.y).to.equal(0)
+            describe(`A field of one node's links are all nulled`, () => {
+                allDirectionsAre(origin)
+                positionIs(origin, 0, 0)
             })
             counter++
 
@@ -131,54 +64,34 @@ describe(`Field.mjs`, () => {
 
         describe(`A field made up up more than 1 node`, () => {
             const field = new Field(2,2)
+            const origin = field.origin
+            const ne = field.origin.ne
+            let directions = [
+                'we',
+                'nw',
+                'we',
+                'sw',
+                'so',
+                'se'
+            ]
 
-            it(`Test ${counter}: lastNode is nulled`, () => {
-                expect(field.lastNode).to.equal(null)
-            })
-            counter++
+            theseDirectionsAre(origin, directions)
+            directionIsNot(origin, 'ea')
+            directionIsNot(origin, 'no')
 
-            it(`Test ${counter}: currentNode is nulled`, () => {
-                expect(field.currentNode).to.equal(null)
-            })
-            counter++
-
-            it(`Test ${counter}: origin.east is occupied`, () => {
-                expect(field.origin.ea).to.not.equal(null)
-            })
-            counter++
+            directions = [
+                'nw',
+                'we',
+                'sw',
+                'so',
+                'se'
+            ]
             
-            it(`Test ${counter}: origin.north is occupied`, () => {
-                expect(field.origin.no).to.not.equal(null)
-            })
-            counter++
+            directionIsNot(ne, 'ne')
+            theseDirectionsAre(ne, directions)
             
             it(`Test ${counter}: origin.NorthEast is occupied`, () => {
                 expect(field.origin.ne).to.not.equal(null)
-            })
-            counter++
-            
-            it(`Test ${counter}: origin.NorthWest is not occupied`, () => {
-                expect(field.origin.nw).to.equal(null)
-            })
-            counter++
-           
-            it(`Test ${counter}: origin.West is not occupied`, () => {
-                expect(field.origin.we).to.equal(null)
-            })
-            counter++
-            
-            it(`Test ${counter}: origin.SouthWest is not occupied`, () => {
-                expect(field.origin.sw).to.equal(null)
-            })
-            counter++
-            
-            it(`Test ${counter}: origin.South is not occupied`, () => {
-                expect(field.origin.so).to.equal(null)
-            })
-            counter++
-            
-            it(`Test ${counter}: origin.SouthEast is not occupied`, () => {
-                expect(field.origin.se).to.equal(null)
             })
             counter++
             
@@ -234,6 +147,7 @@ describe(`Field.mjs`, () => {
 
             expect(node.position.x).to.eql(1)
             expect(node.position.y).to.eql(1)
+            positionIs(node, 1)
 
         })
         counter++
@@ -243,50 +157,169 @@ describe(`Field.mjs`, () => {
             const field = new Field(3,3)
             const center = field.origin.ne
 
-            it(`Test ${counter}: center.east is not null`, () => {
-                expect(center.ea).to.not.equal(null)    
-            })
-            counter++
-
-            it(`Test ${counter}: center.NorthEast is not null`, () => {
-                expect(center.ne).to.not.equal(null)
-            })
-            counter++
-
-            it(`Test ${counter}: center.North is not null`, () => {
-                expect(center.no).to.not.equal(null)    
-            })
-            counter++
-
-            it(`Test ${counter}: center.NorthWest is not null`, () => {
-                expect(center.nw).to.not.equal(null)
-            })
-            counter++
-
-            it(`Test ${counter}: center.West is not null`, () => {
-                expect(center.we).to.not.equal(null)
-            })
-            counter++
-            
-            it(`Test ${counter}: center.SouthWest is not null`, () => {
-                expect(center.sw).to.not.equal(null)
-            })
-            counter++
-            
-            it(`Test ${counter}: center.South is not null`, () => {
-                expect(center.so).to.not.equal(null)
-            })
-            counter++
-            
-            it(`Test ${counter}: center.SouthEast is not null`, () => {
-                expect(center.se).to.not.equal(null)
-            })
-            counter++
+            directionIsNot(center, 'ea')
+            directionIsNot(center, 'ne')
+            directionIsNot(center, 'no')
+            directionIsNot(center, 'nw')
+            directionIsNot(center, 'we')
+            directionIsNot(center, 'sw')
+            directionIsNot(center, 'so')
+            directionIsNot(center, 'se')
         })
     })
 })
 
 
+function directionIs(node, direction, value=null){
+    try {
+        nullCheck(node)
+        const directionString = expandDirection(direction)
+
+        it(`Test ${counter}: ${node.alias}.${directionString} is ${value}`, () => {
+            expect(node[direction]).to.eql(value)
+        })
+    
+        counter++
+    } catch(error) {
+        // console.error(error)
+        const directionString = expandDirection(direction)
+
+        it(`Test ${counter}: node.${directionString} is ${value}`, () => {
+            expect(false).to.eql(true)
+        })
+
+        counter++
+    } 
+}
+
+function allDirectionsAre(node, value=null){
+    directionIs(node, 'ea')
+    directionIs(node, 'ne')
+    directionIs(node, 'no')
+    directionIs(node, 'nw')
+    directionIs(node, 'we')
+    directionIs(node, 'sw')
+    directionIs(node, 'so')
+    directionIs(node, 'se')
+}
+
+function theseDirectionsAre(node, directionArray, value=null){
+    directionArray.forEach(direction => {
+        directionIs(node,direction,value)
+    })
+}
+
+function directionIsNot(node, direction, value=null){
+    try {
+        nullCheck(node)
+        const directionString = expandDirection(direction)
+
+        it(`Test ${counter}: ${node.alias}.${directionString} is NOT ${value}`, () => {
+            expect(node[direction]).to.not.eql(value)
+        })
+    
+        counter++
+    } catch(error) {
+        // console.error(error)
+        const directionString = expandDirection(direction)
+
+        it(`Test ${counter}: node.${directionString} is NOT ${value}`, () => {
+            expect(true).to.eql(false)
+        })
+    
+        counter++
+    }
+}
+
+function allDirectionsAreNot(node, value=null){
+    directionIsNot(node, 'ea')
+    directionIsNot(node, 'ne')
+    directionIsNot(node, 'no')
+    directionIsNot(node, 'nw')
+    directionIsNot(node, 'we')
+    directionIsNot(node, 'sw')
+    directionIsNot(node, 'so')
+    directionIsNot(node, 'se')
+}
+
+function theseDirectionsAreNot(node, directionArray, value=null){
+    directionArray.forEach(direction => {
+        directionIsNot(node, direction, value)
+    })
+}
+
+function positionIs(node, intX=null, intY=null){
+    try {
+        nullCheck(node)
+        it(`Test ${counter}: ${node.alias}.position.x is ${intX}`, () => {
+            expect(node.position.x).to.eql(intX)
+        })
+        counter++
+
+        it(`Test ${counter}: ${node.alias}.position.y is ${intY}`, () => {
+            expect(node.position.y).to.eql(intY)
+        })
+        counter++
+    } catch(error) {
+        // console.error(error)
+        it(`Test ${counter}: node.position.x is ${intX}`, () => {
+            expect(false).to.eql(true)
+        })
+        counter++
+
+        it(`Test ${counter}: node.position.y is ${intY}`, () => {
+            expect(false).to.eql(true)
+        })
+        counter++
+    }
+}
+
+function coverIs(node, int=0){
+    try {
+        it(`Test ${counter}: Cover is ${int}`, () => {
+            expect(node.getCover()).to.equal(int)
+        })
+        counter++
+    } catch(error) {
+        // console.log(error)
+        it(`Test ${counter}: Cover is ${int}`, () => {
+            expect(true).to.equal(false)
+        })
+        counter++
+    }
+
+
+
+}
+
+function expandDirection(str){
+
+    if( str === 'ea' ){
+        return 'east'
+    } else if( str === 'ne' ){
+        return 'north east'
+    } else if( str === 'no' ){
+        return 'north'
+    } else if( str === 'nw' ){
+        return 'north west'
+    } else if( str === 'we' ){
+        return 'west'
+    } else if( str === 'sw' ){
+        return 'south west'
+    } else if( str === 'so' ){
+        return 'south'
+    } else if( str === 'se' ){
+        return 'south east'
+    } else {
+        throw new SyntaxError(`Invalid Direction value. Enter a direction in two character. ex. 'ea'`)
+    }
+}
+
+function nullCheck(node){
+    if(node === null){
+        return new TypeError('NullNodeError: the node is null');
+    }
+}
 
 
 

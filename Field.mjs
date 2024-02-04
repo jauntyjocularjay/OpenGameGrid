@@ -8,7 +8,7 @@ export class Field {
             throw new RangeError('Width and Depth must be greater than 1.')
         }
 
-        this.origin = new HexNode(0,0)
+        this.origin = new HexNode(0,0,'origin')
         this.linkEasterly(this.origin, width)
         this.linkNortherly(this.origin, width, depth)
     }
@@ -57,8 +57,8 @@ export class Field {
 }
 
 export class HexNode {
-    constructor( posX=null, posY=null ){
-        // console.log(`Creating HexNode at position ${posX},${posY}`);
+    constructor( posX=null, posY=null, alias='node' ){
+        this.alias = alias
 
         this.ea = null
         this.ne = null
