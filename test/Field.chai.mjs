@@ -99,6 +99,29 @@ describe(`Field.mjs`, () => {
 
             allDirectionsAreNot(center)
         })
+
+        describe('Calculate the distance between two nodes', () => {
+            const field = new Field(3,3)
+            const node11 = field.getNode(1,1)
+            const node21 = field.getNode(2,1)
+            const node22 = field.getNode(2,2)
+
+            it(`Test ${counter}: Horizontal distance minimum value is 10`, () => {
+                expect(field.calculateDistance(node11, node21)).to.equal(10)
+            })
+            counter++
+
+            it(`Test ${counter}:   Vertical distance minimum value is 10`, () => {
+                expect(field.calculateDistance(node22, node21)).to.equal(10)
+            })
+            counter++
+
+            it(`Test ${counter}:   Diagonal distance minimum value is 14`, () => {
+                expect(field.calculateDistance(node11, node22)).to.equal(14)
+            })
+            counter++
+
+        })
     })
 })
 

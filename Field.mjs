@@ -96,6 +96,23 @@ export class Field {
 
     }
 
+    calculateDistance(node1, node2){
+        let deltaX = Math.abs(node2.position.x - node1.position.x)
+        let deltaY = Math.abs(node2.position.y - node1.position.y)
+        let deltaXY
+
+        deltaX = Math.pow(deltaX, 2)
+        deltaY = Math.pow(deltaY, 2)
+
+        deltaXY = deltaX + deltaY
+
+        deltaXY = Math.sqrt(deltaXY) * 10
+
+        deltaXY = Math.floor(deltaXY)
+
+        return deltaXY
+    }
+
 }
 
 export class HexNode {
