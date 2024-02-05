@@ -91,7 +91,7 @@ export class Field {
         if(currentNode.position.x === positionX && currentNode.position.y === positionY){
             return currentNode
         } else {
-            throw RangeError('Out Of Bounds: the selected position is not on the field.')
+            throw new RangeError('Out Of Bounds: the selected position is not on the field.')
         }
 
     }
