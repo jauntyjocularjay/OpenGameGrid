@@ -2,7 +2,7 @@
 
 import { 
     Field,
-    HexNode
+    Node
 } from '../Field.mjs'
 import {
     expect
@@ -13,7 +13,7 @@ let counter = 1
 describe(`Field.mjs`, () => {
     describe(`HexNodes`, () => {
         describe(`HexNodes constructor without arguments.`, () => {
-            const node = new HexNode()
+            const node = new Node()
 
             allDirectionsAre(node)
             positionIs(node)
@@ -21,14 +21,14 @@ describe(`Field.mjs`, () => {
         })
 
         describe(`HexNode constructor at origin`, () => {
-            const node = new HexNode(0,0)
+            const node = new Node(0,0)
 
             allDirectionsAre(node)
             positionIs(node, 0, 0)
         })
 
         describe(`HexNode constructor at a nonzero point`, () => {
-            const node = new HexNode(1,2)
+            const node = new Node(1,2)
 
             allDirectionsAre(node)
             positionIs(node, 1, 2)
@@ -130,7 +130,7 @@ function directionIs(node, direction, value=null){
         nullCheck(node)
         const directionString = expandDirection(direction)
 
-        it(`Test ${counter}: ${node.alias}.${directionString} is ${value}`, () => {
+        it(`Test ${counter}: ${node.getLocation()}.${directionString} is ${value}`, () => {
             expect(node[direction]).to.eql(value)
         })
     
@@ -173,7 +173,7 @@ function directionIsNot(node, direction, value=null){
         nullCheck(node)
         const directionString = expandDirection(direction)
 
-        it(`Test ${counter}: ${node.alias}.${directionString} is NOT ${value}`, () => {
+        it(`Test ${counter}: ${node.getLocation()}.${directionString} is NOT ${value}`, () => {
             expect(node[direction]).to.not.eql(value)
         })
     
@@ -214,12 +214,12 @@ function theseDirectionsAreNot(node, directionArray, value=null){
 function positionIs(node, intX=null, intY=null){
     try {
         nullCheck(node)
-        it(`Test ${counter}: ${node.alias}.position.x is ${intX}`, () => {
+        it(`Test ${counter}: ${node.getLocation()}.position.x is ${intX}`, () => {
             expect(node.position.x).to.eql(intX)
         })
         counter++
 
-        it(`Test ${counter}: ${node.alias}.position.y is ${intY}`, () => {
+        it(`Test ${counter}: ${node.getLocation()}.position.y is ${intY}`, () => {
             expect(node.position.y).to.eql(intY)
         })
         counter++

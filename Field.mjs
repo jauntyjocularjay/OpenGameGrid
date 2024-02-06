@@ -1,25 +1,44 @@
 import {
-    Enum
+    Enum,
+    ExtEnum
 } from './libs/EnumJS/ENUM.mjs'
+
+const HORIZONTAL = new Enum(['CARDINAL', 'DIAGNAL'])
+const DIAGNAL = new Enum(['DIAGNAL', 'CARDINAL'])
 
 export class Field {
     constructor(width, depth){
+        /**
+         * Field represents a grid of squares. Each square on the grid is a node 
+         * with a path to each adjascent node. However, this implementation takes 
+         * into account the length of the hypotnuse for diagonal movement.
+         * @constructor 
+         * @param { number } width is the size in the x-direction
+         * @param { number } depth is the size in the y-direction
+         */
         if( width < 1 || depth < 1){
             throw new RangeError('Width and Depth must be greater than 1.')
         }
 
-        this.origin = new HexNode(0,0,'origin')
+        this.origin = new Node(0,0,'origin')
         this.linkEasterly(this.origin, width)
         this.linkNortherly(this.origin, width, depth)
         this.linkAll(this.origin)
     }
 
     linkEasterly(node, width, j=0){
+        /**
+         * @method linkEasterly links nodes from x=0 to x = width
+         * @param { Node } node node is the node to start with
+         * @param { number }  width width is the size parameter in the x-direction
+         * @param { number }  j is the current y=value of the nodes in the y-direction
+         *          inherited from the @method LinkNortherly method.
+         */
         let currentNode = node
         let lastNode = null
 
         for( let i = 1; i < width ; i++ ){
-            currentNode.ea = new HexNode(i,j)
+            currentNode.ea = new Node(i,j)
             lastNode = currentNode
             currentNode = currentNode.ea
             currentNode.we = lastNode
@@ -27,10 +46,17 @@ export class Field {
     }
 
     linkNortherly(node, width, depth){
+        /**
+         * @method linkNortherly
+         * @param { Node } node is the node to start with
+         * @param { number }  width is the size in x-direction; 
+         *      this is needed to pass to @method linkEasterly
+         * @param { number }  j is the size in the y-direction
+         */
         let currentNode = node
         let lastNode = null
         for( let j = 1 ; j < depth ; j++ ){
-            currentNode.no = new HexNode(0,j)
+            currentNode.no = new Node(0,j)
             lastNode = currentNode
             currentNode = currentNode.no
             currentNode.so = lastNode
@@ -39,6 +65,10 @@ export class Field {
     }
 
     linkAll(start) {
+        /**
+         * @method linkAll
+         *      connects the field of nodes together by every available path. 
+         */
         this.linkXYPositive(start)
         this.linkYPositive(start)
         this.linkXYNegative(start)
@@ -115,8 +145,60 @@ export class Field {
 
 }
 
-export class HexNode {
-    constructor( posX=null, posY=null){
+class Path extends Enum {
+
+}
+
+export class Node {
+
+    static HORIZONTAL = HORIZONTAL
+    static DIAGNAL = DIAGNAL
+
+    constructor( posX=null, posY=null, cover='ZERO' ){
+        /**
+         * Node represents a node on a grid of squares. Each square on the grid 
+         * has a path to each adjascent node. However, this implementation takes into
+         * account the length of the hypotnuse for diagonal movement.
+         * @constructor 
+         * @param { number } posX represents the location of the node in the x-direction
+         * @param { number } posY represents the location of the node in the y-direction
+         */
+
+        this.paths = { 
+            ea: {
+                node: null,
+                pathType: CARDINAL
+            },
+            no: {
+                node: null,
+                pathType: CARDINAL
+            },
+            we: {
+                node: null,
+                pathType: CARDINAL
+            },
+            so: {
+                node: null,
+                pathType: CARDINAL
+            },
+            ne: {
+                node: null,
+                pathType: DIAGNAL
+            },
+            no: {
+                node: null,
+                pathType: DIAGNAL
+            },
+            we: {
+                node: null,
+                pathType: DIAGNAL
+            },
+            so: {
+                node: null,
+                pathType: DIAGNAL
+            }
+        }
+
         this.ea = null
         this.ne = null
         this.no = null
@@ -131,18 +213,15 @@ export class HexNode {
             y: posY
         }
 
-        this.alias = null
-
-        this.position.x === null && this.position.y === null
-            ? this.alias = 'node'
-            : this.alias = `(${this.position.x}, ${this.position.y})`
-
         /**
+         * @param cover
+         * @todo 
+         * finish this implementation
          * Cover is a modifier on toHit chance
          * units get as a bonus
          *  */ 
-        this.cover = new Enum(['zero','half','whole'])
-        // this.setCover('zero')
+        this.cover = new Enum(['ZERO','HALF','WHOLE'])
+        this.setCover(cover)
     }
 
     setCover( cover ){
@@ -168,6 +247,12 @@ export class HexNode {
             throw new RangeError(`Cover's value is out of range`)
         }
     }
+
+    getLocation(){
+        if(this.position.x === null || this.position.y === null){
+            return 'node'
+        } else {
+            return `node@(${this.position.x},${this.position.y})`
+        }
+    }
 }
-
-
