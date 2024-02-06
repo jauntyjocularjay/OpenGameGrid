@@ -1,6 +1,5 @@
 import {
-    Enum,
-    ExtEnum
+    Enum
 } from './libs/EnumJS/ENUM.mjs'
 
 
@@ -170,12 +169,6 @@ export class Field {
     }
 
 }
-
-class Path extends Enum {
-
-}
-
-
 
 const CARDINAL = new Enum(['CARDINAL', 'DIAGNAL'])
 const DIAGNAL = new Enum(['DIAGNAL', 'CARDINAL'])
