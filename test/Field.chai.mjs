@@ -15,7 +15,8 @@ describe(`Field.mjs`, () => {
         describe(`HexNodes constructor without arguments.`, () => {
             const node = new Node()
 
-            allDirectionsAre(node)
+            nodeIs(node.getEA())
+            allPathsAre(node)
             positionIs(node)
             coverIs(node)
         })
@@ -23,14 +24,14 @@ describe(`Field.mjs`, () => {
         describe(`HexNode constructor at origin`, () => {
             const node = new Node(0,0)
 
-            allDirectionsAre(node)
+            allPathsAre(node)
             positionIs(node, 0, 0)
         })
 
         describe(`HexNode constructor at a nonzero point`, () => {
             const node = new Node(1,2)
 
-            allDirectionsAre(node)
+            allPathsAre(node)
             positionIs(node, 1, 2)
         })
     })
@@ -39,7 +40,8 @@ describe(`Field.mjs`, () => {
         describe(`A field of one node's links are all nulled`, () => {
             const field = new Field(1,1)
             const origin = field.origin
-            allDirectionsAre(origin)
+
+            allPathsAre(origin)
             positionIs(origin, 0, 0)
         })
 
@@ -55,49 +57,54 @@ describe(`Field.mjs`, () => {
             positionIs(node11, 1, 1)
         })
 
-        describe(`A field made up up more than 1 node`, () => {
+        describe(`A field made up more than 1 node`, () => {
             const field = new Field(2,2)
-            const origin = field.origin
-            const ne = field.origin.ne
+            let node = field.origin
 
-            let directions = [
-                'we',
-                'nw',
-                'we',
-                'sw',
-                'so',
-                'se'
+            let paths
+
+            paths = [
+                node.getEA(),
+                node.getNE(),
+                node.getNO()
             ]
+            thesePathsAreNot(paths)
 
-            theseDirectionsAre(origin, directions)
-            directionIsNot(origin, 'ea')
-            directionIsNot(origin, 'no')
+            paths = [
+                node.getNW(),
+                node.getWE(),
+                node.getSW(),
+                node.getSO(),
+                node.getSE()
+            ]
+            thesePathsAre(paths)
 
-            directions = [
-                'ea',
-                'ne',
-                'no',
-                'nw',
-                'se'
+            node = node.getNE()
+            paths = [
+                node.getEA(),
+                node.getNE(),
+                node.getNO(),
+                node.getNW(),
+                node.getSE()
             ]
             
-            theseDirectionsAre(ne, directions)
+            thesePathsAre(paths)
 
-            directions = [
-                'we',
-                'sw',
-                'so'
+            paths = [
+                node.getWE(),
+                node.getSW(),
+                node.getSO()
             ]
 
-            theseDirectionsAreNot(ne, directions)
+            thesePathsAreNot(paths)
 
         })
 
         describe(`The center node in a 3x3 field will have all of its links occupied`, () => {
             const field = new Field(3,3)
-            const center = field.origin.ne
+            const center = field.origin.getNE()
 
-            allDirectionsAreNot(center)
+            allPathsAreNot(center)
         })
 
         describe('Calculate the distance between two nodes', () => {
@@ -125,90 +132,93 @@ describe(`Field.mjs`, () => {
     })
 })
 
-function directionIs(node, direction, value=null){
+function nodeIs(node, value=null, append=''){
     try {
         nullCheck(node)
-        const directionString = expandDirection(direction)
-
-        it(`Test ${counter}: ${node.getLocation()}.${directionString} is ${value}`, () => {
-            expect(node[direction]).to.eql(value)
+        
+        it(`Test ${counter}:${append} node is ${value}`, () => {
+            expect(node).to.equal(value)
         })
-    
-        counter++
     } catch(error) {
-        // console.error(error)
-        const directionString = expandDirection(direction)
 
-        it(`Test ${counter}: node.${directionString} is ${value} threw an error`, () => {
-            expect(false).to.eql(true)
+        it(`Test ${counter}: node is ${value} threw an error`, () => {
+            expect(node).to.equal(value)
         })
 
-        counter++
-    } 
-}
-
-function allDirectionsAre(node, value=null){
-    const directionArray = [
-            'ea',
-            'ne',
-            'no',
-            'nw',
-            'we',
-            'sw',
-            'so',
-            'se'
-        ]
-
-    theseDirectionsAre(node, directionArray, value=null)
-}
-
-function theseDirectionsAre(node, directionArray, value=null){
-    directionArray.forEach(direction => {
-        directionIs(node,direction,value)
-    })
-}
-
-function directionIsNot(node, direction, value=null){
-    try {
-        nullCheck(node)
-        const directionString = expandDirection(direction)
-
-        it(`Test ${counter}: ${node.getLocation()}.${directionString} is NOT ${value}`, () => {
-            expect(node[direction]).to.not.eql(value)
-        })
-    
-        counter++
-    } catch(error) {
-        // console.error(error)
-        const directionString = expandDirection(direction)
-
-        it(`Test ${counter}: node.${directionString} is NOT ${value} threw an error`, () => {
-            expect(true).to.eql(false)
-        })
-    
+        console.log(error)
+    } finally {
         counter++
     }
 }
 
-function allDirectionsAreNot(node, value=null){
-    const directionArray = [
-        'ea',
-        'ne',
-        'no',
-        'nw',
-        'we',
-        'sw',
-        'so',
-        'se'
-    ]
-    
-    theseDirectionsAreNot(node, directionArray, value)
+function thesePathsAre(paths, value=null){
+    paths.forEach(path => {
+        let pathTo
+        path === null
+            ? pathTo = ` Path to ${path}`
+            : pathTo = ` Path to ${path.getLocation()}`
+        nodeIs(path, value, pathTo)
+    })
 }
 
-function theseDirectionsAreNot(node, directionArray, value=null){
-    directionArray.forEach(direction => {
-        directionIsNot(node, direction, value)
+function allPathsAre(node, value=null){
+    const allPaths = [
+        node.getEA(),
+        node.getNO(),
+        node.getWE(),
+        node.getSO(),
+        node.getNE(),
+        node.getNW(),
+        node.getSW(),
+        node.getSE()
+    ]
+
+    thesePathsAre(allPaths, value)
+}
+
+function nodeIsNot(node, value=null, append=''){
+    try {
+        nullCheck(node)
+        
+        it(`Test ${counter}:${append} node is not ${value}`, () => {
+            expect(node).to.not.equal(value)
+        })
+    } catch(error) {
+
+        it(`Test ${counter}: node is not ${value} threw an error`, () => {
+            expect(node).to.not.equal(value)
+        })
+
+        console.log(error)
+    } finally {
+        counter++
+    }
+}
+
+function thesePathsAreNot(paths, value=null){
+
+    paths.forEach(path => {
+        let pathTo
+        path === null
+            ? pathTo = ` Path to ${path}`
+            : pathTo = ` Path to ${path.getLocation()}`
+        nodeIsNot(path, value, pathTo)
     })
+}
+
+function allPathsAreNot(node, value=null){
+    const allPaths = [
+        node.getEA(),
+        node.getNO(),
+        node.getWE(),
+        node.getSO(),
+        node.getNE(),
+        node.getNW(),
+        node.getSW(),
+        node.getSE()
+    ]
+
+    thesePathsAreNot(allPaths, value)
 }
 
 function positionIs(node, intX=null, intY=null){
@@ -253,29 +263,6 @@ function coverIs(node, int=0){
 
 
 
-}
-
-function expandDirection(str){
-
-    if( str === 'ea' ){
-        return 'east'
-    } else if( str === 'ne' ){
-        return 'north east'
-    } else if( str === 'no' ){
-        return 'north'
-    } else if( str === 'nw' ){
-        return 'north west'
-    } else if( str === 'we' ){
-        return 'west'
-    } else if( str === 'sw' ){
-        return 'south west'
-    } else if( str === 'so' ){
-        return 'south'
-    } else if( str === 'se' ){
-        return 'south east'
-    } else {
-        throw new SyntaxError(`Invalid Direction value. Enter a direction in two character. ex. 'ea'`)
-    }
 }
 
 function nullCheck(node){

@@ -19,7 +19,7 @@ export class Field {
             throw new RangeError('Width and Depth must be greater than 1.')
         }
 
-        this.origin = new Node(0,0,'origin')
+        this.origin = new Node(0,0)
         this.linkEasterly(this.origin, width)
         this.linkNortherly(this.origin, width, depth)
         this.linkAll(this.origin)
@@ -37,10 +37,10 @@ export class Field {
         let lastNode = null
 
         for( let i = 1; i < width ; i++ ){
-            currentNode.ea = new Node(i,j)
+            currentNode.setEA(new Node(i,j))
             lastNode = currentNode
-            currentNode = currentNode.ea
-            currentNode.we = lastNode
+            currentNode = currentNode.getEA()
+            currentNode.setWE(lastNode)
         }
     }
 
@@ -55,10 +55,10 @@ export class Field {
         let currentNode = node
         let lastNode = null
         for( let j = 1 ; j < depth ; j++ ){
-            currentNode.no = new Node(0,j)
+            currentNode.setNO(new Node(0,j))
             lastNode = currentNode
-            currentNode = currentNode.no
-            currentNode.so = lastNode
+            currentNode = currentNode.getNO()
+            currentNode.setSO(lastNode)
             this.linkEasterly(currentNode, width, j)
         }
     }
@@ -72,57 +72,84 @@ export class Field {
         this.linkYPositive(start)
         this.linkXYNegative(start)
         
-        if( start.no !== null ){
-            this.linkAll(start.no)
+        if( start.getNO() !== null ){
+            this.linkAll(start.getNO())
         }
 
-        if( start.ea !== null ){
-            this.linkAll(start.ea)
+        if( start.getEA() !== null ){
+            this.linkAll(start.getEA())
         }
     }
 
     linkXYPositive(start){
-        if(start.no !== null && start.no.ea !== null){
-            start.ne = start.no.ea
-            start.no.ea.sw = start
+        if(start.getNO() !== null && start.getNO().getEA() !== null){
+            start.setNE(start.getNO().getEA())
+            start.getNO().getEA().setSW(start)
         }
     }
 
     linkYPositive(start){
-        if(start.no !== null && start.no.ea !== null && start.ea !== null){
-            start.ea.no = start.no.ea
-            start.no.ea.so = start.ea
+        if(     start.getNO() !== null && 
+                start.getNO().getEA() !== null && 
+                start.getEA() !== null){
+            start.getEA().setNO(start.getNO().getEA())
+            start.getNO().getEA().setSO(start.getEA())
         }
     }
 
     linkXYNegative(start){
-        if(start.no !== null && start.ea !== null){
-            start.no.se = start.ea
-            start.ea.nw = start.no
+        if(start.getNO() !== null && start.getEA() !== null){
+            start.getNO().setSE(start.getEA())
+            start.getEA().setNW(start.getNO())
         }
     }
 
     getNode(positionX, positionY) {
         let currentNode = this.origin
 
-        if(currentNode.no !== null){
-            for( let j = 0 ; j < positionY; j++ ){
-                currentNode = currentNode.no
-            }
-        }
-
-        if(currentNode.paths.ea.node !== null){
-            for( let i = 0 ; i < positionX ; i++ ){
-                currentNode = currentNode.paths.ea.node
-            }
-        }
-
-        if(currentNode.position.x === positionX && currentNode.position.y === positionY){
-            return currentNode
-        } else {
+        if((positionX > this.getWidth()-1 || positionX < 0) && (positionY > this.getDepth()-1 || positionY < 0)){
             throw new RangeError('Out Of Bounds: the selected position is not on the field.')
         }
 
+        if(currentNode.getNO() !== null){
+            for( let j = 0 ; j < positionY; j++ ){
+                currentNode = currentNode.getNO()
+            }
+        }
+
+        if(currentNode.getEA() !== null){
+            for( let i = 0 ; i < positionX ; i++ ){
+                currentNode = currentNode.getEA()
+            }
+        }
+
+        return currentNode
+
+    }
+
+    getWidth(){
+        let currentNode = this.origin
+        let i = 1
+
+        while( currentNode.getEA() !== null ){
+            currentNode = currentNode.getEA()
+            i++
+        }
+        
+        return i
+    }
+
+    getDepth(){
+        let currentNode = this.origin
+        let j = 1
+
+        while( currentNode.getNO() !== null ){
+            currentNode = currentNode.getNO()
+            j++
+        }
+
+        return j
+        
     }
 
     calculateDistance(node1, node2){
@@ -202,14 +229,6 @@ export class Node {
                 pathType: DIAGNAL
             }
         }
-
-        this.ne = this.paths.ne.node
-        this.no = this.paths.no.node
-        this.nw = this.paths.nw.node
-        this.we = this.paths.we.node
-        this.sw = this.paths.sw.node
-        this.so = this.paths.so.node
-        this.se = this.paths.se.node
 
         this.position = {
             x: posX,
