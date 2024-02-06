@@ -199,14 +199,14 @@ export class Node {
             }
         }
 
-        this.ea = null
-        this.ne = null
-        this.no = null
-        this.nw = null
-        this.we = null
-        this.sw = null
-        this.so = null
-        this.se = null
+        this.ea = this.paths.ea.node
+        this.ne = this.paths.ne.node
+        this.no = this.paths.no.node
+        this.nw = this.paths.nw.node
+        this.we = this.paths.we.node
+        this.sw = this.paths.sw.node
+        this.so = this.paths.so.node
+        this.se = this.paths.se.node
 
         this.position = {
             x: posX,
