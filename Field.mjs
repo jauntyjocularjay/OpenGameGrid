@@ -3,8 +3,7 @@ import {
     ExtEnum
 } from './libs/EnumJS/ENUM.mjs'
 
-const HORIZONTAL = new Enum(['CARDINAL', 'DIAGNAL'])
-const DIAGNAL = new Enum(['DIAGNAL', 'CARDINAL'])
+
 
 export class Field {
     constructor(width, depth){
@@ -149,9 +148,14 @@ class Path extends Enum {
 
 }
 
+
+
+const CARDINAL = new Enum(['CARDINAL', 'DIAGNAL'])
+const DIAGNAL = new Enum(['DIAGNAL', 'CARDINAL'])
+
 export class Node {
 
-    static HORIZONTAL = HORIZONTAL
+    static CARDINAL = CARDINAL
     static DIAGNAL = DIAGNAL
 
     constructor( posX=null, posY=null, cover='ZERO' ){
@@ -185,15 +189,15 @@ export class Node {
                 node: null,
                 pathType: DIAGNAL
             },
-            no: {
+            nw: {
                 node: null,
                 pathType: DIAGNAL
             },
-            we: {
+            sw: {
                 node: null,
                 pathType: DIAGNAL
             },
-            so: {
+            se: {
                 node: null,
                 pathType: DIAGNAL
             }
