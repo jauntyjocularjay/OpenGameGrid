@@ -1,10 +1,34 @@
 import {
-    Enum
+    Enum,
+    ExtEnum
 } from './libs/EnumJS/ENUM.mjs'
 
 
 
+const CARDINAL = new Enum([{'CARDINAL':10}, {'DIAGONAL':14}])
+const DIAGONAL = new Enum([{'DIAGONAL':14}, {'CARDINAL':10}])
+const pathEA = new Enum(['ea','ne','no','nw','we','sw','so','se'])
+const pathNE = new Enum(['ne','no','nw','we','sw','so','se','ea'])
+const pathNO = new Enum(['no','nw','we','sw','so','se','ea','ne'])
+const pathNW = new Enum(['nw','we','sw','so','se','ea','ne','no'])
+const pathWE = new Enum(['we','sw','so','se','ea','ne','no','nw'])
+const pathSW = new Enum(['sw','so','se','ea','ne','no','nw','we'])
+const pathSO = new Enum(['so','se','ea','ne','no','nw','we','sw'])
+const pathSE = new Enum(['se','ea','ne','no','nw','we','sw','so'])
+
 export class Field {
+
+    static CARDINAL = CARDINAL
+    static DIAGONAL = DIAGONAL
+    static pathEA = pathEA
+    static pathNE = pathNE
+    static pathNO = pathNO
+    static pathNW = pathNW
+    static pathWE = pathWE
+    static pathSW = pathSW
+    static pathSO = pathSO
+    static pathSE = pathSE
+
     constructor(width, depth){
         /**
          * Field represents a grid of squares. Each square on the grid is a node 
@@ -151,6 +175,79 @@ export class Field {
         
     }
 
+    findPath(pts, currentNode, destination){
+
+        if(this.goNO(pts,currentNode,destination)){
+            pts = pts - CARDINAL
+            this.findPath(pts, currentNode.getNO(), destination)
+        } else if(this.goSO(pts,currentNode,destination)){
+
+        } else if(this.goEA(pts,currentNode,destination)){
+
+        } else if(this.goWE(pts,currentNode,destination)){
+
+        } else if(this.goNE(pts,currentNode,destination)){
+
+        } else if(this.goSE(pts,currentNode,destination)){
+
+        } else if(this.goNW(pts,currentNode,destination)){
+
+        } else if(this.goSW(pts,currentNode,destination)){
+
+        } else {
+            return
+        }
+
+    }
+
+    goNO(pts, currentNode, destination){
+        const valid = 
+            destination.getX() - currentNode.getX() === 0 &&
+            destination.getY() - currentNode.getY() > 0 &&
+            currentNode.getNO() !== null &&
+            this.coverBlocks(currentNode, currentNode.getSO()) &&
+            pts - CARDINAL.valueOf() >= 0
+
+        return valid
+    }
+
+    goSO(pts, currentNode, destination){
+        const valid = 
+            destination.getX() - currentNode.getX() === 0 &&
+            destination.getY() - currentNode.getY() < 0 &&
+            currentNode.getSO() !== null &&
+            this.coverBlocks(currentNode, currentNode.getSO()) &&
+            pts - CARDINAL.valueOf() >= 0 
+        
+        return valid
+    }
+
+    goEA(pts, currentNode, destination){
+        const valid = 
+            destination.getX() - currentNode.getX() > 0 &&
+            destination.getY() - currentNode.getY() === 0 &&
+            currentNode.getEA() !== null &&
+            this.coverBlocks(currentNode, currentNode.getEA()) &&
+            pts - CARDINAL.valueOf() >= 0 
+        
+        return valid
+    }
+
+    goWE(pts, currentNode, destination){
+        const valid = 
+            destination.getX() - currentNode.getX() > 0 &&
+            destination.getY() - currentNode.getY() === 0 &&
+            currentNode.getWE() !== null &&
+            this.coverBlocks(currentNode, currentNode.getWE()) &&
+            pts - CARDINAL.valueOf() >= 0 
+        
+        return valid
+    }
+
+    coverBlocks(node1, node2, mod=0){
+        return node2.getZ() - node1.getZ() < 2 + mod
+    }
+
     calculateDistance(node1, node2){
         let deltaX = Math.abs(node2.position.x - node1.position.x)
         let deltaY = Math.abs(node2.position.y - node1.position.y)
@@ -170,15 +267,20 @@ export class Field {
 
 }
 
-const CARDINAL = new Enum(['CARDINAL', 'DIAGNAL'])
-const DIAGNAL = new Enum(['DIAGNAL', 'CARDINAL'])
-
 export class Node {
 
     static CARDINAL = CARDINAL
-    static DIAGNAL = DIAGNAL
+    static DIAGONAL = DIAGONAL
+    static pathEA = pathEA
+    static pathNE = pathNE
+    static pathNO = pathNO
+    static pathNW = pathNW
+    static pathWE = pathWE
+    static pathSW = pathSW
+    static pathSO = pathSO
+    static pathSE = pathSE
 
-    constructor( posX=null, posY=null, cover='ZERO' ){
+    constructor( posX=null, posY=null, posZ=null, cover='ZERO' ){
         /**
          * Node represents a node on a grid of squares. Each square on the grid 
          * has a path to each adjascent node. However, this implementation takes into
@@ -186,9 +288,10 @@ export class Node {
          * @constructor 
          * @param { number } posX represents the location of the node in the x-direction
          * @param { number } posY represents the location of the node in the y-direction
+         * @param { number } posZ represents the height of the square
          */
 
-        this.paths = { 
+        this.path = { 
             ea: {
                 node: null,
                 pathType: CARDINAL
@@ -207,33 +310,32 @@ export class Node {
             },
             ne: {
                 node: null,
-                pathType: DIAGNAL
+                pathType: DIAGONAL
             },
             nw: {
                 node: null,
-                pathType: DIAGNAL
+                pathType: DIAGONAL
             },
             sw: {
                 node: null,
-                pathType: DIAGNAL
+                pathType: DIAGONAL
             },
             se: {
                 node: null,
-                pathType: DIAGNAL
+                pathType: DIAGONAL
             }
         }
 
         this.position = {
             x: posX,
-            y: posY
+            y: posY,
+            z: posZ
         }
 
         /**
-         * @param cover
-         * @todo 
-         * finish this implementation
-         * Cover is a modifier on toHit chance
-         * units get as a bonus
+         * @property { number } cover
+         * @todo finish this implementation
+         *          Cover is a modifier on toHit chance units get as a bonus
          *  */ 
         this.cover = new Enum(['ZERO','HALF','WHOLE'])
         this.setCover(cover)
@@ -272,68 +374,90 @@ export class Node {
     }
 
     getEA(){
-        return this.paths.ea.node
+        return this.path.ea.node
     }
 
     setEA(node){
-        this.paths.ea.node = node
+        this.path.ea.node = node
     }
 
     getNE(){
-        return this.paths.ne.node
+        return this.path.ne.node
     }
 
     setNE(node){
-        this.paths.ne.node = node
+        this.path.ne.node = node
     }
 
     getNO(){
-        return this.paths.no.node
+        return this.path.no.node
     }
 
     setNO(node){
-        this.paths.no.node = node
+        this.path.no.node = node
     }
 
     getNW(){
-        return this.paths.nw.node
+        return this.path.nw.node
     }
 
     setNW(node){
-        this.paths.nw.node = node
+        this.path.nw.node = node
     }
 
     getWE(){
-        return this.paths.we.node
+        return this.path.we.node
     }
 
     setWE(node){
-        this.paths.we.node = node
+        this.path.we.node = node
     }
 
     getSW(){
-        return this.paths.sw.node
+        return this.path.sw.node
     }
 
     setSW(node){
-        this.paths.sw.node = node
+        this.path.sw.node = node
     }
 
     getSO(){
-        return this.paths.so.node
+        return this.path.so.node
     }
 
     setSO(node){
-        this.paths.so.node = node
+        this.path.so.node = node
     }
 
     getSE(){
-        return this.paths.se.node
+        return this.path.se.node
     }
 
     setSE(node){
-        this.paths.se.node = node
+        this.path.se.node = node
     }
 
+    getX(){
+        return this.position.x
+    }
 
+    setX(posX){
+        this.position.x = posX
+    }
+
+    getY(){
+        return this.position.y
+    }
+
+    setY(posY){
+        this.position.x = posY
+    }
+
+    getZ(){
+        return this.position.z
+    }
+
+    setZ(posZ){
+        this.position.x = posZ
+    }
 }
