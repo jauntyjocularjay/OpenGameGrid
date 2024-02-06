@@ -111,9 +111,9 @@ export class Field {
             }
         }
 
-        if(currentNode.ea !== null){
+        if(currentNode.paths.ea.node !== null){
             for( let i = 0 ; i < positionX ; i++ ){
-                currentNode = currentNode.ea
+                currentNode = currentNode.paths.ea.node
             }
         }
 
@@ -203,7 +203,6 @@ export class Node {
             }
         }
 
-        this.ea = this.paths.ea.node
         this.ne = this.paths.ne.node
         this.no = this.paths.no.node
         this.nw = this.paths.nw.node
@@ -236,7 +235,7 @@ export class Node {
         } else if( cover === 1 ){
             this.cover.select('ONE')
         } else if( cover === 2 ){
-            this.cover.select('ONE')
+            this.cover.select('WHOLE')
         }
     }
 
@@ -259,4 +258,70 @@ export class Node {
             return `node@(${this.position.x},${this.position.y})`
         }
     }
+
+    getEA(){
+        return this.paths.ea.node
+    }
+
+    setEA(node){
+        this.paths.ea.node = node
+    }
+
+    getNE(){
+        return this.paths.ne.node
+    }
+
+    setNE(node){
+        this.paths.ne.node = node
+    }
+
+    getNO(){
+        return this.paths.no.node
+    }
+
+    setNO(node){
+        this.paths.no.node = node
+    }
+
+    getNW(){
+        return this.paths.nw.node
+    }
+
+    setNW(node){
+        this.paths.nw.node = node
+    }
+
+    getWE(){
+        return this.paths.we.node
+    }
+
+    setWE(node){
+        this.paths.we.node = node
+    }
+
+    getSW(){
+        return this.paths.sw.node
+    }
+
+    setSW(node){
+        this.paths.sw.node = node
+    }
+
+    getSO(){
+        return this.paths.so.node
+    }
+
+    setSO(node){
+        this.paths.so.node = node
+    }
+
+    getSE(){
+        return this.paths.se.node
+    }
+
+    setSE(node){
+        this.paths.se.node = node
+    }
+
+
 }
