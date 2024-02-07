@@ -5,8 +5,8 @@ import {
 
 
 
-const CARDINAL = new Enum([{'CARDINAL':10}, {'DIAGONAL':14}])
-const DIAGONAL = new Enum([{'DIAGONAL':14}, {'CARDINAL':10}])
+const CARDINAL = new ExtEnum([{'CARDINAL':10}, {'DIAGONAL':14}])
+const DIAGONAL = new ExtEnum([{'DIAGONAL':14}, {'CARDINAL':10}])
 const pathEA = new Enum(['ea','ne','no','nw','we','sw','so','se'])
 const pathNE = new Enum(['ne','no','nw','we','sw','so','se','ea'])
 const pathNO = new Enum(['no','nw','we','sw','so','se','ea','ne'])
@@ -177,33 +177,57 @@ export class Field {
 
     findPath(pts, currentNode, destination){
 
-        if(this.goNO(pts,currentNode,destination)){
-            pts = pts - CARDINAL
-            this.findPath(pts, currentNode.getNO(), destination)
-        } else if(this.goSO(pts,currentNode,destination)){
+    }
 
-        } else if(this.goEA(pts,currentNode,destination)){
+    goDiagonal(pts, currentNode, destination){
+        const posX2 = destination.position.x
+        const posY2 = destination.position.y
+        const posx1 = currentNode.position.x
+        const posY1 = currentNode.position.y
 
-        } else if(this.goWE(pts,currentNode,destination)){
-
-        } else if(this.goNE(pts,currentNode,destination)){
-
-        } else if(this.goSE(pts,currentNode,destination)){
-
-        } else if(this.goNW(pts,currentNode,destination)){
-
-        } else if(this.goSW(pts,currentNode,destination)){
-
+        if(this.goNE()){
+            pts = pts - DIAGONAL.v()
+            this.goDiagonal(pts, currentNode.getNE(), destination)
+        } else if (posX2 - posx1 < 0 && posY2 - posY1 < 0){
+            pts = pts - DIAGONAL.v()
+            this.goDiagonal(pts, currentNode.getSW(), destination)            
+        } else if(posX2 - posx1 > 0 && posY2 - posY1 < 0){
+            pts = pts - DIAGONAL.v()
+            this.goDiagonal(pts, currentNode.getNW(), destination)
+        } else if (posX2 - posx1 < 0 && posY2 - posY1 > 0){
+            pts = pts - DIAGONAL.v()
+            this.goDiagonal(pts, currentNode.getSE(), destination)
+        } else if ( (posY2 - posY1 === 0) ||
+                    (posX2 - posx1 === 0 )){
+            this.goCardinal(pts, currentNode, destination)
         } else {
+            // both are zero, arrived at destination
             return
         }
+    }
+
+    goCardinal(pts, currentNode, destination){
 
     }
 
+    pathIsAvailable(node, pathEnum){
+        const target = node.path[pathEnum.v()]
+        if(     target !== null &&
+                target.cover === 0){
+            return true
+        } else {
+            return false
+        }
+    }
+
     goNO(pts, currentNode, destination){
+        const posX2 = destination.position.x
+        const posY2 = destination.position.y
+        const posX1 = currentNode.position.x
+        const posY1 = currentNode.position.y
         const valid = 
-            destination.getX() - currentNode.getX() === 0 &&
-            destination.getY() - currentNode.getY() > 0 &&
+            posX2 - posX1 === 0 &&
+            posY2 - posY1 > 0 &&
             currentNode.getNO() !== null &&
             this.coverBlocks(currentNode, currentNode.getSO()) &&
             pts - CARDINAL.valueOf() >= 0
@@ -244,25 +268,22 @@ export class Field {
         return valid
     }
 
-    coverBlocks(node1, node2, mod=0){
-        return node2.getZ() - node1.getZ() < 2 + mod
+    goNE(pts, currentNode, destination){
+        const posX2 = destination.position.x
+        const posY2 = destination.position.y
+        const posx1 = currentNode.position.x
+        const posY1 = currentNode.position.y
+        const valid = 
+            posX2 - posx1 > 0 && posY2 - posY1 > 0 &&
+            currentNode.getNE() !== null &&
+            this.coverBlocks(currentNode, currentNode.getNE()) &&
+            pts - DIAGONAL.v() >= 0 
+        
+        return valid
     }
 
-    calculateDistance(node1, node2){
-        let deltaX = Math.abs(node2.position.x - node1.position.x)
-        let deltaY = Math.abs(node2.position.y - node1.position.y)
-        let deltaXY
-
-        deltaX = Math.pow(deltaX, 2)
-        deltaY = Math.pow(deltaY, 2)
-
-        deltaXY = deltaX + deltaY
-
-        deltaXY = Math.sqrt(deltaXY) * 10
-
-        deltaXY = Math.floor(deltaXY)
-
-        return deltaXY
+    coverBlocks(node1, node2, mod=0){
+        return node2.getZ() - node1.getZ() < 2 + mod
     }
 
 }
