@@ -4,9 +4,28 @@ import {
 } from './libs/EnumJS/ENUM.mjs'
 
 
-
+/**
+ * @var { ExtEnum } CARDINAL
+ * @var { ExtEnum } DIAGONAL
+ * Are extended enums holding the possible values for action
+ * action points used to move in a cardinal or diagonal
+ * direction respectively.
+ */
 const CARDINAL = new ExtEnum([{'CARDINAL':10}, {'DIAGONAL':14}])
 const DIAGONAL = new ExtEnum([{'DIAGONAL':14}, {'CARDINAL':10}])
+
+/**
+ * @var { Enum } pathEA
+ * @var { Enum } pathNE
+ * @var { Enum } pathNO
+ * @var { Enum } pathNW
+ * @var { Enum } pathWE
+ * @var { Enum } pathSW
+ * @var { Enum } pathSO
+ * @var { Enum } pathSE
+ * 
+ * are enums saved as staic values in the Node class. 
+ */
 const pathEA = new Enum(['ea','ne','no','nw','we','sw','so','se'])
 const pathNE = new Enum(['ne','no','nw','we','sw','so','se','ea'])
 const pathNO = new Enum(['no','nw','we','sw','so','se','ea','ne'])
@@ -20,14 +39,6 @@ export class Field {
 
     static CARDINAL = CARDINAL
     static DIAGONAL = DIAGONAL
-    static pathEA = pathEA
-    static pathNE = pathNE
-    static pathNO = pathNO
-    static pathNW = pathNW
-    static pathWE = pathWE
-    static pathSW = pathSW
-    static pathSO = pathSO
-    static pathSE = pathSE
 
     constructor(width, depth){
         /**
@@ -176,37 +187,80 @@ export class Field {
     }
 
     findPath(pts, currentNode, destination){
+        const p2 = destination.position
+        const p1 = currentNode.position
 
+        if(p2.x - p1.x !== 0 && p2.y - p1.y !== 0){
+
+            this.tryDiagonal(pts, currentNode, destination)
+
+        } else if (p2.x - p1.x !== 0 && p2.y - p1.y !== 0) {
+
+            this.tryCardinal(pts, currentNode, destination)
+
+        }
     }
 
-    goDiagonal(pts, currentNode, destination){
-        const posX2 = destination.position.x
-        const posY2 = destination.position.y
-        const posx1 = currentNode.position.x
-        const posY1 = currentNode.position.y
+    tryDiagonal(pts, currentNode, destination){
+        const p2 = destination.position
+        const p1 = currentNode.position
 
-        if(this.goNE()){
+        if(this.goNE(pts, currentNode, destination)){
+
             pts = pts - DIAGONAL.v()
-            this.goDiagonal(pts, currentNode.getNE(), destination)
-        } else if (posX2 - posx1 < 0 && posY2 - posY1 < 0){
+            this.findPath(pts, currentNode.getNE(), destination)
+
+        } else if (this.goNW()){
+
             pts = pts - DIAGONAL.v()
-            this.goDiagonal(pts, currentNode.getSW(), destination)            
-        } else if(posX2 - posx1 > 0 && posY2 - posY1 < 0){
+            this.findPath(pts, currentNode.getSW(), destination)            
+
+        } else if(this.goSW()){
+
             pts = pts - DIAGONAL.v()
-            this.goDiagonal(pts, currentNode.getNW(), destination)
-        } else if (posX2 - posx1 < 0 && posY2 - posY1 > 0){
+            this.findPath(pts, currentNode.getNW(), destination)
+
+        } else if (this.goSE()){
+
             pts = pts - DIAGONAL.v()
-            this.goDiagonal(pts, currentNode.getSE(), destination)
-        } else if ( (posY2 - posY1 === 0) ||
-                    (posX2 - posx1 === 0 )){
-            this.goCardinal(pts, currentNode, destination)
+            this.findPath(pts, currentNode.getSE(), destination)
+
         } else {
-            // both are zero, arrived at destination
             return
         }
     }
 
-    goCardinal(pts, currentNode, destination){
+    tryCardinal(pts, currentNode, destination){
+        const p2 = destination.position
+        const p1 = currentNode.position
+
+        if( this.goNO(pts, currentNode, destination) ){
+
+            currentNode = currentNode.getNO()
+            pts = pts - CARDINAL.v()
+            this.findPath(pts, currentNode, destination)
+
+        } else if( this.goSO(pts, currentNode, destination) ){
+
+            currentNode = currentNode.getSO()
+            pts = pts - CARDINAL.v()
+            this.findPath(pts, currentNode, destination)
+
+        } else if( this.goEA(pts, currentNode, destination) ){
+
+            currentNode = currentNode.getEA()
+            pts = pts - CARDINAL.v()
+            this.findPath(pts, currentNode, destination)
+
+        } else if( this.goWE(pts, currentNode, destination) ){
+
+            currentNode = currentNode.getWE()
+            pts = pts - CARDINAL.v()
+            this.findPath(pts, currentNode, destination)
+
+        } else {
+            throw new Error('Cannot go goCardinal, goDiagonal, or stay')
+        }
 
     }
 
@@ -221,62 +275,99 @@ export class Field {
     }
 
     goNO(pts, currentNode, destination){
-        const posX2 = destination.position.x
-        const posY2 = destination.position.y
-        const posX1 = currentNode.position.x
-        const posY1 = currentNode.position.y
+        const p2 = destination.position
+        const p1 = currentNode.position
         const valid = 
-            posX2 - posX1 === 0 &&
-            posY2 - posY1 > 0 &&
-            currentNode.getNO() !== null &&
-            this.coverBlocks(currentNode, currentNode.getSO()) &&
-            pts - CARDINAL.valueOf() >= 0
+            p2.x - p1.x > 0 && 
+            p2.y - p1.y > 0 &&
+            this.pathIsAvailable(currentNode, Node.no) &&
+            // These are replaced by pathIsAvailable()
+            // currentNode.getNO() !== null &&
+            // this.coverBlocks(currentNode, currentNode.getSO()) &&
+            pts - CARDINAL.v() >= 0
 
         return valid
     }
 
     goSO(pts, currentNode, destination){
+        const p2 = destination.position
+        const p1 = currentNode.position
         const valid = 
-            destination.getX() - currentNode.getX() === 0 &&
-            destination.getY() - currentNode.getY() < 0 &&
-            currentNode.getSO() !== null &&
-            this.coverBlocks(currentNode, currentNode.getSO()) &&
-            pts - CARDINAL.valueOf() >= 0 
+            p2.x - p1.x > 0 && 
+            p2.y - p1.y > 0 &&
+            this.pathIsAvailable(currentNode, Node.so) &&
+            pts - CARDINAL.v() >= 0 
         
         return valid
     }
 
     goEA(pts, currentNode, destination){
+        const p2 = destination.position
+        const p1 = currentNode.position
         const valid = 
-            destination.getX() - currentNode.getX() > 0 &&
-            destination.getY() - currentNode.getY() === 0 &&
-            currentNode.getEA() !== null &&
-            this.coverBlocks(currentNode, currentNode.getEA()) &&
-            pts - CARDINAL.valueOf() >= 0 
+            p2.x - p1.x > 0 && 
+            p2.y - p1.y > 0 &&
+            this.pathIsAvailable(currentNode, Node.ea) &&
+            pts - CARDINAL.v() >= 0 
         
         return valid
     }
 
     goWE(pts, currentNode, destination){
+        const p2 = destination.position
+        const p1 = currentNode.position
         const valid = 
-            destination.getX() - currentNode.getX() > 0 &&
-            destination.getY() - currentNode.getY() === 0 &&
-            currentNode.getWE() !== null &&
-            this.coverBlocks(currentNode, currentNode.getWE()) &&
-            pts - CARDINAL.valueOf() >= 0 
+            p2.x - p1.x > 0 && 
+            p2.y - p1.y > 0 &&
+            this.pathIsAvailable(currentNode, Field.we) &&
+            pts - CARDINAL.v() >= 0 
         
         return valid
     }
 
     goNE(pts, currentNode, destination){
-        const posX2 = destination.position.x
-        const posY2 = destination.position.y
-        const posx1 = currentNode.position.x
-        const posY1 = currentNode.position.y
+        const p2 = destination.position
+        const p1 = currentNode.position
         const valid = 
-            posX2 - posx1 > 0 && posY2 - posY1 > 0 &&
-            currentNode.getNE() !== null &&
-            this.coverBlocks(currentNode, currentNode.getNE()) &&
+            p2.x - p1.x > 0 && 
+            p2.y - p1.y > 0 &&
+            this.pathIsAvailable(currentNode, Node.ne) &&
+            pts - DIAGONAL.v() >= 0 
+        
+        return valid
+    }
+
+    goNW(pts, currentNode, destination){
+        const p2 = destination.position
+        const p1 = currentNode.position
+        const valid = 
+            p2.x - p1.x < 0 && 
+            p2.y - p1.y > 0 &&
+            this.pathIsAvailable(currentNode, Node.nw) &&
+            pts - DIAGONAL.v() >= 0 
+        
+        return valid
+    }
+
+    goSW(pts, currentNode, destination){
+        const p2 = destination.position
+        const p1 = currentNode.position
+        const valid = 
+            p2.x - p1.x < 0 && 
+            p2.y - p1.y < 0 &&
+            this.pathIsAvailable(currentNode, Node.sw) &&
+            pts - DIAGONAL.v() >= 0 
+        
+        return valid
+    }
+    
+    goSE(pts, currentNode, destination){
+        const p2 = destination.position
+        const p1 = currentNode.position
+        const valid = 
+            p2.x - p1.x > 0 && 
+            p2.y - p1.y < 0 &&
+            this.pathIsAvailable(currentNode, Node.se) &&
             pts - DIAGONAL.v() >= 0 
         
         return valid
@@ -292,14 +383,14 @@ export class Node {
 
     static CARDINAL = CARDINAL
     static DIAGONAL = DIAGONAL
-    static pathEA = pathEA
-    static pathNE = pathNE
-    static pathNO = pathNO
-    static pathNW = pathNW
-    static pathWE = pathWE
-    static pathSW = pathSW
-    static pathSO = pathSO
-    static pathSE = pathSE
+    static ea = pathEA
+    static ne = pathNE
+    static no = pathNO
+    static nw = pathNW
+    static we = pathWE
+    static sw = pathSW
+    static so = pathSO
+    static se = pathSE
 
     constructor( posX=null, posY=null, posZ=null, cover='ZERO' ){
         /**
