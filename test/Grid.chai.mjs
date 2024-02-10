@@ -1,23 +1,23 @@
 'use debugger'
 
 import { 
-    Field,
+    Grid,
     Node
-} from '../Field.mjs'
+} from '../Grid.mjs'
 import {
     expect
 } from 'chai'
 
 let counter = 1
 
-describe(`Field.mjs`, () => {
-    describe(`HexNodes`, () => {
+describe(`Grid.mjs`, () => {
+    describe(`Node`, () => {
         describe(`HexNodes constructor without arguments.`, () => {
             const node = new Node()
 
             nodeIs(node.getEA())
             allPathsAre(node)
-            positionIs(node)
+            indicesAre(node)
             coverIs(node)
         })
 
@@ -25,40 +25,40 @@ describe(`Field.mjs`, () => {
             const node = new Node(0,0)
 
             allPathsAre(node)
-            positionIs(node, 0, 0)
+            indicesAre(node, 0, 0)
         })
 
         describe(`HexNode constructor at a nonzero point`, () => {
             const node = new Node(1,2)
 
             allPathsAre(node)
-            positionIs(node, 1, 2)
+            indicesAre(node, 1, 2)
         })
     })
 
-    describe(`Field`, () => {
+    describe(`Grid`, () => {
         describe(`A field of one node's links are all nulled`, () => {
-            const field = new Field(1,1)
+            const field = new Grid(1,1)
             const origin = field.origin
 
             allPathsAre(origin)
-            positionIs(origin, 0, 0)
+            indicesAre(origin, 0, 0)
         })
 
         describe(`A field made up of more than 1 node can use the Field.getNode() method`, () => {
-            const field = new Field(2, 2);
+            const field = new Grid(2, 2);
         
             const node01 = field.getNode(0, 1)
             const node10 = field.getNode(1, 0)
             const node11 = field.getNode(1, 1)
         
-            positionIs(node01, 0, 1)
-            positionIs(node10, 1, 0)
-            positionIs(node11, 1, 1)
+            indicesAre(node01, 0, 1)
+            indicesAre(node10, 1, 0)
+            indicesAre(node11, 1, 1)
         })
 
         describe(`A field made up more than 1 node`, () => {
-            const field = new Field(2,2)
+            const field = new Grid(2,2)
             let node = field.origin
 
             let paths
@@ -101,36 +101,100 @@ describe(`Field.mjs`, () => {
         })
 
         describe(`The center node in a 3x3 field will have all of its links occupied`, () => {
-            const field = new Field(3,3)
+            const field = new Grid(3,3)
             const center = field.origin.getNE()
 
             allPathsAreNot(center)
         })
 
-        describe('Calculate the distance between two nodes', () => {
-            const field = new Field(3,3)
-            const node11 = field.getNode(1,1)
-            const node21 = field.getNode(2,1)
-            const node22 = field.getNode(2,2)
 
-            it(`Test ${counter}: Horizontal distance minimum value is 10`, () => {
-                expect(field.calculateDistance(node11, node21)).to.equal(10)
-            })
-            counter++
+    })
 
-            it(`Test ${counter}:   Vertical distance minimum value is 10`, () => {
-                expect(field.calculateDistance(node22, node21)).to.equal(10)
-            })
-            counter++
+    describe('Pathfinding', ()=>{
+        describe('Available paths', () => {
 
-            it(`Test ${counter}:   Diagonal distance minimum value is 14`, () => {
-                expect(field.calculateDistance(node11, node22)).to.equal(14)
-            })
-            counter++
+            /**
+             * pathfinding NOT get[direction]
+             */
+            const field = new Grid(3,3)
+            let subject = field.origin.getNE()
+            let paths
 
+            allPathsAreAvailable(subject)
+
+            subject = new Node(0,0)
+
+            allPathsAreAvailable(subject, false)
+
+            subject = field.origin.getNO()
+            paths = [
+                Node.no,
+                Node.ne,
+                Node.ea,
+                Node.se,
+                Node.so
+            ]
+
+            thesePathsAreAvailable(subject, paths)
+
+            paths = [
+                Node.nw,
+                Node.we,
+                Node.sw
+            ]
+
+            thesePathsAreAvailable(subject, paths, false)
+
+        })
+
+        describe('Pathfinding', () => {
+            /**
+             * @todo finish pathfinding tests
+             */
+            const field = new Grid(4,4)
+            let currentNode = field.origin.getEA()
+            let start = field.origin.getEA()
+            let destination
+
+            currentNode = currentNode.getEA()
+            currentNode = currentNode.getNE()
+            currentNode = currentNode.getNO()
+            currentNode = currentNode.getNW()
+            currentNode = currentNode.getWE()
+            currentNode = currentNode.getSW()
+            currentNode = currentNode.getSO()
+            currentNode = currentNode.getSE()
+
+            nodesMatch(start, currentNode)
+
+            field.getNode(2,0).setEA(null)
+            field.getNode(1,2).setEA(null)
+            field.getNode(0,2).setEA(null)
+            field.getNode(3,2).setNO(null)
+            field.getNode(1,1).setEA(null)
+            field.getNode(0,1).setEA(null)
+            field.origin.getNO().getNO().setNO(null)
+            start = field.getNode(3,2)
+            destination = field.getNode(0,1)
+
+            nodesMatch(start, field.findPath(100,start,destination))
+
+            start = field.getNode(3,1)
+            destination = field.getNode(0,2)
+
+            nodesMatch(start,field.findPath(100,start,destination))
         })
     })
 })
+
+function nodesMatch(node1, node2){
+    nullCheck(node1)
+    nullCheck(node2)
+
+    it(`Test ${counter}: ${node1.toString()} matches ${node2.toString()}`, () => {
+        expect(node1.matches(node2)).to.be.true
+    })
+}
 
 function nodeIs(node, value=null, append=''){
     try {
@@ -221,29 +285,79 @@ function allPathsAreNot(node, value=null){
     thesePathsAreNot(allPaths, value)
 }
 
-function positionIs(node, intX=null, intY=null){
+function pathIsAvailable(start, pathEnum, available=true){
+    it(`Test ${counter}: ${start.getLocation()} ${pathEnum.v()} is${!available ? ' not' : ''} available`, () => {
+        const valid = Grid.pathIsAvailable(start, pathEnum)
+        available
+            ?   expect(valid).to.be.true
+            :   expect(valid).to.be.false
+    })
+    counter++
+}
+
+function thesePathsAreAvailable(start, paths, available=true){
+    paths.forEach(path => {
+        pathIsAvailable(start, path, available)
+    })
+}
+
+function allPathsAreAvailable(start, available=true){
+    const paths = [
+        Node.ea,
+        Node.ne,
+        Node.no,
+        Node.nw,
+        Node.we,
+        Node.sw,
+        Node.so,
+        Node.se
+    ]
+
+    thesePathsAreAvailable(start, paths, available)
+}
+
+function indicesAre(node, intX=null, intY=null, intZ=null){
     try {
         nullCheck(node)
-        it(`Test ${counter}: ${node.getLocation()}.position.x is ${intX}`, () => {
-            expect(node.position.x).to.eql(intX)
+        it(`Test ${counter}: ${node.getLocation()}.index.x is ${intX}`, () => {
+            expect(node.getX()).to.eql(intX)
         })
         counter++
 
-        it(`Test ${counter}: ${node.getLocation()}.position.y is ${intY}`, () => {
-            expect(node.position.y).to.eql(intY)
+        it(`Test ${counter}: ${node.getLocation()}.index.y is ${intY}`, () => {
+            expect(node.getY()).to.eql(intY)
         })
         counter++
+
+        if(intZ !== null) {
+
+            it(`Test ${counter}: ${node.getLocation()}.index.z is ${intZ}`, () => {
+                expect(node.getZ()).to.eql(intZ)
+            })
+            counter++
+
+        }
+
     } catch(error) {
         // console.error(error)
-        it(`Test ${counter}: node.position.x is ${intX} threw an error`, () => {
+        it(`Test ${counter}: node.index.x is ${intX} threw an error`, () => {
             expect(false).to.eql(true)
         })
         counter++
 
-        it(`Test ${counter}: node.position.y is ${intY} threw an error`, () => {
+        it(`Test ${counter}: node.index.y is ${intY} threw an error`, () => {
             expect(false).to.eql(true)
         })
         counter++
+
+        if(intZ !== null) {
+
+            it(`Test ${counter}: ${node.getLocation()}.index.z is ${intZ} threw an error`, () => {
+                expect(false).to.be.true
+            })
+            counter++
+
+        }
     }
 }
 
@@ -260,9 +374,6 @@ function coverIs(node, int=0){
         })
         counter++
     }
-
-
-
 }
 
 function nullCheck(node){
