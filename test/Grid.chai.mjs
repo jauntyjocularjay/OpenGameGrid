@@ -12,7 +12,7 @@ let counter = 1
 
 describe(`Grid.mjs`, () => {
     describe(`Node`, () => {
-        describe(`HexNodes constructor without arguments.`, () => {
+        describe(`Nodes constructor without arguments.`, () => {
             const node = new Node()
 
             nodeIs(node.getEA())
@@ -21,18 +21,27 @@ describe(`Grid.mjs`, () => {
             coverIs(node)
         })
 
-        describe(`HexNode constructor at origin`, () => {
+        describe(`Node constructor at origin`, () => {
             const node = new Node(0,0)
 
             allPathsAre(node)
             indicesAre(node, 0, 0)
         })
 
-        describe(`HexNode constructor at a nonzero point`, () => {
+        describe(`Node constructor at a nonzero point`, () => {
             const node = new Node(1,2)
 
             allPathsAre(node)
             indicesAre(node, 1, 2)
+        })
+
+        describe(`Node matching works`, () => {
+            const origin = new Node(0,0,0)
+            const notOrigin = new Node(1,1,0)
+            const anotherOrigin = new Node(0,0,0)
+
+            nodesMatch(origin, notOrigin, false)
+            nodesMatch(origin, anotherOrigin)
         })
     })
 
@@ -187,13 +196,21 @@ describe(`Grid.mjs`, () => {
     })
 })
 
-function nodesMatch(node1, node2){
+function nodesMatch(node1, node2, bool=true){
     nullCheck(node1)
     nullCheck(node2)
 
-    it(`Test ${counter}: ${node1.toString()} matches ${node2.toString()}`, () => {
-        expect(node1.matches(node2)).to.be.true
-    })
+    if(bool){
+        it(`Test ${counter}: ${node1.toString()} matches ${node2.toString()}`, () => {
+            expect(node1.matches(node2)).to.be.true
+        })
+    } else {
+        it(`Test ${counter}: ${node1.toString()} does not match ${node2.toString()}`, () => {
+            expect(node1.matches(node2)).to.be.false
+        })
+    }
+    
+    counter++
 }
 
 function nodeIs(node, value=null, append=''){

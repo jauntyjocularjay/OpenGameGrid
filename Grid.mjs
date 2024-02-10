@@ -420,7 +420,7 @@ export class Node {
     static so = pathSO
     static se = pathSE
 
-    constructor( x=null, y=null, z=null, cover='ZERO' ){
+    constructor( x=null, y=null, z=0, cover='ZERO' ){
         /**
          * Node represents a node on a grid of squares. Each square on the grid 
          * has a path to each adjascent node. However, this implementation takes into
