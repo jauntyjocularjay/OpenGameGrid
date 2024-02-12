@@ -9,13 +9,14 @@ import {
 } from 'chai'
 
 let counter = 1
+const ntab = '\n            '
 
 describe(`Grid.mjs`, () => {
     describe(`Node`, () => {
         describe(`Nodes constructor without arguments.`, () => {
             const node = new Node()
 
-            nodeIs(node.getEA())
+            nodeEvaluatesTo(node.getEA())
             allPathsAre(node)
             indicesAre(node)
             coverIs(node)
@@ -77,7 +78,7 @@ describe(`Grid.mjs`, () => {
                 node.getNE(),
                 node.getNO()
             ]
-            thesePathsAreNot(paths)
+            theseNodesEvaluateTo(paths, false)
 
             paths = [
                 node.getNW(),
@@ -86,6 +87,7 @@ describe(`Grid.mjs`, () => {
                 node.getSO(),
                 node.getSE()
             ]
+            theseNodesEvaluateTo(paths)
             thesePathsAre(paths)
 
             node = node.getNE()
@@ -122,9 +124,6 @@ describe(`Grid.mjs`, () => {
     describe('Pathfinding', ()=>{
         describe('Available paths', () => {
 
-            /**
-             * pathfinding NOT get[direction]
-             */
             const field = new Grid(3,3)
             let subject = field.origin.getNE()
             let paths
@@ -200,17 +199,55 @@ function nodesMatch(node1, node2, bool=true){
     nullCheck(node1)
     nullCheck(node2)
 
-    if(bool){
-        it(`Test ${counter}: ${node1.toString()} matches ${node2.toString()}`, () => {
-            expect(node1.matches(node2)).to.be.true
-        })
-    } else {
-        it(`Test ${counter}: ${node1.toString()} does not match ${node2.toString()}`, () => {
-            expect(node1.matches(node2)).to.be.false
-        })
-    }
+    const matches = bool 
+        ? 'matches' 
+        : 'does not match'
+
+    const description = 
+        `Test ${counter}:`+ ntab +
+        `${node1.toString()}` + ntab + 
+        matches + ntab +
+        `${node2.toString()}`
+
+    it(description, () => {
+        bool
+            ? expect(node1.matches(node2)).to.be.true
+            : expect(node1.matches(node2)).to.be.false
+    })
     
     counter++
+}
+
+function nodeEvaluatesTo(node, bool=true, value=null){
+    try{
+        const evaluatesTo = bool 
+            ? 'evaluates to '
+            : 'does not evaluate to '
+
+        const description = 
+            testCount() + nodeAlias(node) + evaluatesTo + value
+
+        it(description,() => {
+            bool
+                ? expect(node).to.eql(value)
+                : expect(node).to.not.eql(value)
+        })
+    } catch(error){
+        it(`nodeEvaluatesTo()` + ' threw an error',() => {
+            expect(true).to.eql(false)
+        })
+
+        console.log(error)
+    } finally {
+        counter++
+    }
+
+}
+
+function theseNodesEvaluateTo(paths, bool=true, value=null){
+    paths.forEach(path => {        
+        nodeEvaluatesTo(path, bool, value)
+    })
 }
 
 function nodeIs(node, value=null, append=''){
@@ -237,7 +274,7 @@ function thesePathsAre(paths, value=null){
         let pathTo
         path === null
             ? pathTo = ` Path to ${path}`
-            : pathTo = ` Path to ${path.getLocation()}`
+            : pathTo = ` Path to ${path.locationToString()}`
         nodeIs(path, value, pathTo)
     })
 }
@@ -282,7 +319,7 @@ function thesePathsAreNot(paths, value=null){
         let pathTo
         path === null
             ? pathTo = ` Path to ${path}`
-            : pathTo = ` Path to ${path.getLocation()}`
+            : pathTo = ` Path to ${path.locationToString()}`
         nodeIsNot(path, value, pathTo)
     })
 }
@@ -303,7 +340,7 @@ function allPathsAreNot(node, value=null){
 }
 
 function pathIsAvailable(start, pathEnum, available=true){
-    it(`Test ${counter}: ${start.getLocation()} ${pathEnum.v()} is${!available ? ' not' : ''} available`, () => {
+    it(`Test ${counter}: ${start.locationToString()} ${pathEnum.v()} is${!available ? ' not' : ''} available`, () => {
         const valid = Grid.pathIsAvailable(start, pathEnum)
         available
             ?   expect(valid).to.be.true
@@ -336,19 +373,19 @@ function allPathsAreAvailable(start, available=true){
 function indicesAre(node, intX=null, intY=null, intZ=null){
     try {
         nullCheck(node)
-        it(`Test ${counter}: ${node.getLocation()}.index.x is ${intX}`, () => {
+        it(`Test ${counter}: ${node.locationToString()}.index.x is ${intX}`, () => {
             expect(node.getX()).to.eql(intX)
         })
         counter++
 
-        it(`Test ${counter}: ${node.getLocation()}.index.y is ${intY}`, () => {
+        it(`Test ${counter}: ${node.locationToString()}.index.y is ${intY}`, () => {
             expect(node.getY()).to.eql(intY)
         })
         counter++
 
         if(intZ !== null) {
 
-            it(`Test ${counter}: ${node.getLocation()}.index.z is ${intZ}`, () => {
+            it(`Test ${counter}: ${node.locationToString()}.index.z is ${intZ}`, () => {
                 expect(node.getZ()).to.eql(intZ)
             })
             counter++
@@ -369,7 +406,7 @@ function indicesAre(node, intX=null, intY=null, intZ=null){
 
         if(intZ !== null) {
 
-            it(`Test ${counter}: ${node.getLocation()}.index.z is ${intZ} threw an error`, () => {
+            it(`Test ${counter}: ${node.locationToString()}.index.z is ${intZ} threw an error`, () => {
                 expect(false).to.be.true
             })
             counter++
@@ -393,9 +430,21 @@ function coverIs(node, int=0){
     }
 }
 
+function testCount(){
+    return `Test ${counter} - `
+}
+
 function nullCheck(node){
-    if(node === null){
-        return new TypeError('NullNodeError: the node is null');
+    if(!node){
+        return new TypeError('Null Node Error: the node is null');
+    }
+}
+
+function nodeAlias(node){
+    if(node){
+        return node.locationToString() + ' '
+    } else {
+        return 'null node '
     }
 }
 

@@ -504,11 +504,11 @@ export class Node {
         }
     }
 
-    getLocation(){
-        if(this.index.x === null || this.index.y === null){
-            return 'node'
+    locationToString(){
+        if(this.getX() === null || this.getY() === null){
+            return 'node without indices'
         } else {
-            return `node@(${this.index.x},${this.index.y})`
+            return `node@(${this.getX()},${this.getY()})`
         }
     }
 
