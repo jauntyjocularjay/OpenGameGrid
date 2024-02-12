@@ -165,22 +165,23 @@ export class Grid {
         
     }
 
-    findPath(pts, currentNode, destination){
+    findPath(pts, start, destination){
+        /**
+         * @method findPath is a recursive method that finds the most direct path
+         * @param { number } pts is the number of action points the unit has
+         * @param { Node } start is the node the path starts on
+         * @param { Node } destination is the node the unit wants to move to
+         * @returns { Node } the destination node for confirmation
+         */
         const p2 = destination
-        const p1 = currentNode
+        const p1 = start
 
         if(p2.getX() - p1.getX() !== 0 && p2.getY() - p1.getY() !== 0){
-
-            this.tryDiagonal(pts, currentNode, destination)
-
-        } else if (p2.getX() - p1.getX() !== 0 && p2.getY() - p1.getY() !== 0) {
-
-            this.tryCardinal(pts, currentNode, destination)
-
+            this.tryDiagonal(pts, start, destination)
+        } else if(p2.getX() - p1.getX() !== 0 && p2.getY() - p1.getY() !== 0) {
+            this.tryCardinal(pts, start, destination)
         } else {
-
-            return currentNode
-
+            return start
         }
     }
 
@@ -193,7 +194,7 @@ export class Grid {
             pts = pts - DIAGONAL.v()
             this.findPath(pts, currentNode.getNE(), destination)
 
-        } else if (this.goNW()){
+        } else if(this.goNW()){
 
             pts = pts - DIAGONAL.v()
             this.findPath(pts, currentNode.getSW(), destination)            
@@ -203,7 +204,7 @@ export class Grid {
             pts = pts - DIAGONAL.v()
             this.findPath(pts, currentNode.getNW(), destination)
 
-        } else if (this.goSE()){
+        } else if(this.goSE()){
 
             pts = pts - DIAGONAL.v()
             this.findPath(pts, currentNode.getSE(), destination)
@@ -363,62 +364,10 @@ export class Grid {
 
 }
 
-
-
-/**
- * @var { Enum } pathEA
- * @var { Enum } pathNE
- * @var { Enum } pathNO
- * @var { Enum } pathNW
- * @var { Enum } pathWE
- * @var { Enum } pathSW
- * @var { Enum } pathSO
- * @var { Enum } pathSE
- * 
- * are enums saved as staic values in the Node class. 
- */
-let paths = [
-    {EA:'ea'},
-    {NE:'ne'},
-    {NO:'no'},
-    {NW:'nw'},
-    {WE:'we'},
-    {SW:'sw'},
-    {SO:'so'},
-    {SE:'se'}
-]
-
-const pathEA = new ExtEnum(paths)
-pathEA.select('EA')
-const pathNE = new ExtEnum(paths)
-pathNE.select('NE')
-const pathNO = new ExtEnum(paths)
-pathNO.select('NO')
-const pathNW = new ExtEnum(paths)
-pathNW.select('NW')
-const pathWE = new ExtEnum(paths)
-pathWE.select('WE')
-const pathSW = new ExtEnum(paths)
-pathSW.select('SW')
-const pathSO = new ExtEnum(paths)
-pathSO.select('SO')
-const pathSE = new ExtEnum(paths)
-pathSE.select('SE')
-
-paths = null // let paths get thrown away by garbage collection
-
 export class Node {
 
     static CARDINAL = CARDINAL
     static DIAGONAL = DIAGONAL
-    static ea = pathEA
-    static ne = pathNE
-    static no = pathNO
-    static nw = pathNW
-    static we = pathWE
-    static sw = pathSW
-    static so = pathSO
-    static se = pathSE
 
     constructor( x=null, y=null, z=0, cover='ZERO' ){
         /**
@@ -436,34 +385,42 @@ export class Node {
 
         this.path = { 
             ea: {
+                alias: 'path east',
                 node: null,
                 pathType: CARDINAL
             },
             no: {
+                alias: 'path north',
                 node: null,
                 pathType: CARDINAL
             },
             we: {
+                alias: 'path west',
                 node: null,
                 pathType: CARDINAL
             },
             so: {
+                alias: 'path south',
                 node: null,
                 pathType: CARDINAL
             },
             ne: {
+                alias: 'path north east',
                 node: null,
                 pathType: DIAGONAL
             },
             nw: {
+                alias: 'path north west',
                 node: null,
                 pathType: DIAGONAL
             },
             sw: {
+                alias: 'path south west',
                 node: null,
                 pathType: DIAGONAL
             },
             se: {
+                alias: 'path south east',
                 node: null,
                 pathType: DIAGONAL
             }
@@ -495,9 +452,9 @@ export class Node {
     getCover(){
         if( this.cover.valueOf() === 'ZERO' ){
             return 0
-        } else if ( this.cover.valueOf() === 'HALF' ){
+        } else if( this.cover.valueOf() === 'HALF' ){
             return 1
-        } else if ( this.cover.valueOf() === 'WHOLE' ){
+        } else if( this.cover.valueOf() === 'WHOLE' ){
             return 2
         } else {
             throw new RangeError(`Cover's value is out of range`)
@@ -512,12 +469,52 @@ export class Node {
         }
     }
 
+    getPaths(){
+        return Object.values(this.path)
+    }
+
+    getIndex(){
+        return this.index
+    }
+
+    getPathEA(){
+        return this.path.ea
+    }
+    
+    getPathNE(){
+        return this.path.ne
+    }
+
+    getPathNO(){
+        return this.path.no
+    }
+
+    getPathNW(){
+        return this.path.nw
+    }
+
+    getPathWE(){
+        return this.path.we
+    }
+
+    getPathSW(){
+        return this.path.sw
+    }
+
+    getPathSO(){
+        return this.path.so
+    }
+
+    getPathSE(){
+        return this.path.se
+    }
+
     getEA(){
         return this.path.ea.node
     }
 
     setEA(node){
-        this.path.ea.node = node
+        this.getPathEA().node = node
     }
 
     getNE(){
@@ -615,12 +612,20 @@ export class Node {
     }
 
     v(){
+        /**
+         * @method v is short for valueOf
+         */
         return this.valueOf()
     }
 
     valueOf(){
+        /**
+         * @method valueOf
+         * @returns { Object } an object with the position and cover of the node
+         * @summary returns an object that allows for the comparison of nodes
+         */
         return {
-            position: this.index,
+            position: this.getIndex(),
             cover: this.cover.valueOf()
         }
     }

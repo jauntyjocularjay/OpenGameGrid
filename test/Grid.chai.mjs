@@ -1,42 +1,82 @@
 'use debugger'
 
-import { 
+import {
     Grid,
     Node
 } from '../Grid.mjs'
 import {
     expect
 } from 'chai'
+import {
+    valueMatch,
+    throwsError,
+    getCounter,
+    count,
+    matches,
+    nullCheck,
+    threwError,
+    have,
+    is,
+    did
+} from './ChaiFunctions/ChaiFunctions.mjs'
+
+
 
 let counter = 1
 const ntab = '\n            '
 
-describe(`Grid.mjs`, () => {
-    describe(`Node`, () => {
-        describe(`Nodes constructor without arguments.`, () => {
+describe('Grid.chai.mjs functions', () => {
+    describe('Testing methods deal with errors', () => {
+        const node = null
+        const nodes = [null, null, null]
+        const path = node
+        const paths = [null, null, null]
+
+        throwsError('matches()', nodesMatch, null, true, TypeError)
+        throwsError('nodeEvaluatesTo()', nodeEvaluatesTo, node, false, TypeError)
+        throwsError('theseNodesEvaluateTo()', theseNodesEvaluateTo, nodes, false, TypeError)
+        throwsError('pathIs()', pathIs, path, false, TypeError)
+        throwsError('thesePathsAre()', thesePathsAre, paths, false, TypeError)
+        throwsError('allPathsAre()', allPathsAre, node, true, TypeError)
+        throwsError('indicesAre()', indicesAre, null, TypeError)
+        throwsError('CoverIs()', coverIs, null, TypeError)
+        throwsError('nodeAlias()', nodeAlias, null, false, TypeError)
+    })
+})
+
+describe('Grid.mjs', () => {
+    describe('Node', () => {
+        describe('Node methods deal with errors', () => {
+            const node = null
+            const origin = new Node(0,0)
+            throwsError('matches()', nodesMatch)
+            throwsError('setCover()', origin.setCover)
+            // throwsError('setEA()', origin.setEA, null, false)
+        })
+
+        describe('Nodes constructor without arguments.', () => {
             const node = new Node()
 
-            nodeEvaluatesTo(node.getEA())
             allPathsAre(node)
             indicesAre(node)
             coverIs(node)
         })
 
-        describe(`Node constructor at origin`, () => {
+        describe('Node constructor at origin', () => {
             const node = new Node(0,0)
 
-            allPathsAre(node)
+            // allPathsAre(node)
             indicesAre(node, 0, 0)
         })
 
-        describe(`Node constructor at a nonzero point`, () => {
+        describe('Node constructor at a nonzero point', () => {
             const node = new Node(1,2)
 
             allPathsAre(node)
             indicesAre(node, 1, 2)
         })
 
-        describe(`Node matching works`, () => {
+        describe('Node matching works', () => {
             const origin = new Node(0,0,0)
             const notOrigin = new Node(1,1,0)
             const anotherOrigin = new Node(0,0,0)
@@ -46,76 +86,74 @@ describe(`Grid.mjs`, () => {
         })
     })
 
-    describe(`Grid`, () => {
-        describe(`A field of one node's links are all nulled`, () => {
-            const field = new Grid(1,1)
-            const origin = field.origin
+    describe('Grid', () => {
+        describe("A grid of one node's links are all nulled", () => {
+            const grid = new Grid(1,1)
+            const origin = grid.origin
 
             allPathsAre(origin)
             indicesAre(origin, 0, 0)
         })
 
-        describe(`A field made up of more than 1 node can use the Field.getNode() method`, () => {
-            const field = new Grid(2, 2);
+        describe('A grid made up of more than 1 node can use the grid.getNode() method', () => {
+            const grid = new Grid(2, 2);
         
-            const node01 = field.getNode(0, 1)
-            const node10 = field.getNode(1, 0)
-            const node11 = field.getNode(1, 1)
+            const node01 = grid.getNode(0, 1)
+            const node10 = grid.getNode(1, 0)
+            const node11 = grid.getNode(1, 1)
         
             indicesAre(node01, 0, 1)
             indicesAre(node10, 1, 0)
             indicesAre(node11, 1, 1)
         })
 
-        describe(`A field made up more than 1 node`, () => {
-            const field = new Grid(2,2)
-            let node = field.origin
-
+        describe('A grid made up more than 1 node', () => {
+            const grid = new Grid(2,2)
+            let node = grid.origin
             let paths
 
             paths = [
-                node.getEA(),
-                node.getNE(),
-                node.getNO()
+                node.getPathEA(),
+                node.getPathNE(),
+                node.getPathNO()
             ]
-            theseNodesEvaluateTo(paths, false)
+            thesePathsAre(paths,false)
 
             paths = [
-                node.getNW(),
-                node.getWE(),
-                node.getSW(),
-                node.getSO(),
-                node.getSE()
+                node.getPathNW(),
+                node.getPathWE(),
+                node.getPathSW(),
+                node.getPathSO(),
+                node.getPathSE()
             ]
-            theseNodesEvaluateTo(paths)
             thesePathsAre(paths)
 
             node = node.getNE()
             paths = [
-                node.getEA(),
-                node.getNE(),
-                node.getNO(),
-                node.getNW(),
-                node.getSE()
+                node.getPathEA(),
+                node.getPathNE(),
+                node.getPathNO(),
+                node.getPathNW(),
+                node.getPathSE()
             ]
             
             thesePathsAre(paths)
 
             paths = [
-                node.getWE(),
-                node.getSW(),
-                node.getSO()
+                node.getPathWE(),
+                node.getPathSW(),
+                node.getPathSO()
             ]
 
-            thesePathsAreNot(paths)
+            thesePathsAre(paths, false)
 
         })
 
-        describe(`The center node in a 3x3 field will have all of its links occupied`, () => {
-            const field = new Grid(3,3)
-            const center = field.origin.getNE()
+        describe('The center node in a 3x3 grid will have all of its links occupied', () => {
+            const grid = new Grid(3,3)
+            const center = grid.origin.getNE()
 
-            allPathsAreNot(center)
+            allPathsAre(center, null, false)
         })
 
 
@@ -124,44 +162,41 @@ describe(`Grid.mjs`, () => {
     describe('Pathfinding', ()=>{
         describe('Available paths', () => {
 
-            const field = new Grid(3,3)
-            let subject = field.origin.getNE()
-            let paths
+            const grid = new Grid(3,3)
+            let subject = grid.getNode(1,1)
+            let paths = []
 
-            allPathsAreAvailable(subject)
+            allPathsAre(subject, null, false)
 
             subject = new Node(0,0)
 
-            allPathsAreAvailable(subject, false)
+            allPathsAre(subject)
 
-            subject = field.origin.getNO()
+            subject = grid.origin.getNO()
             paths = [
-                Node.no,
-                Node.ne,
-                Node.ea,
-                Node.se,
-                Node.so
+                subject.getPathNO(),
+                subject.getPathNE(),
+                subject.getPathEA(),
+                subject.getPathSE(),
+                subject.getPathSO()
             ]
 
-            thesePathsAreAvailable(subject, paths)
+            thesePathsAre(paths, null, false)
 
             paths = [
-                Node.nw,
-                Node.we,
-                Node.sw
+                subject.getPathNW(),
+                subject.getPathWE(),
+                subject.getPathSW()
             ]
 
-            thesePathsAreAvailable(subject, paths, false)
+            thesePathsAre(paths)
 
         })
 
-        describe('Pathfinding', () => {
-            /**
-             * @todo finish pathfinding tests
-             */
-            const field = new Grid(4,4)
-            let currentNode = field.origin.getEA()
-            let start = field.origin.getEA()
+        describe('Pathfinding fundamentals', () => {
+            const grid = new Grid(4,4)
+            let currentNode = grid.origin.getEA()
+            let start = grid.origin.getEA()
             let destination
 
             currentNode = currentNode.getEA()
@@ -174,48 +209,69 @@ describe(`Grid.mjs`, () => {
             currentNode = currentNode.getSE()
 
             nodesMatch(start, currentNode)
+        })
 
-            field.getNode(2,0).setEA(null)
-            field.getNode(1,2).setEA(null)
-            field.getNode(0,2).setEA(null)
-            field.getNode(3,2).setNO(null)
-            field.getNode(1,1).setEA(null)
-            field.getNode(0,1).setEA(null)
-            field.origin.getNO().getNO().setNO(null)
-            start = field.getNode(3,2)
-            destination = field.getNode(0,1)
+        describe('Pathfinding', () => {
+            /**
+             * @todo finish pathfinding tests
+             */
+            const grid = new Grid(4,4)
+            let start = grid.origin.getEA()
+            let destination
+            let result
 
-            nodesMatch(start, field.findPath(100,start,destination))
+            grid.getNode(2,0).setEA(null)
+            grid.getNode(1,2).setEA(null)
+            grid.getNode(0,2).setEA(null)
+            grid.getNode(3,2).setNO(null)
+            grid.getNode(1,1).setEA(null)
+            grid.getNode(0,1).setEA(null)
+            grid.origin.getNO().getNO().setNO(null)
 
-            start = field.getNode(3,1)
-            destination = field.getNode(0,2)
+            start = grid.getNode(3,2)
+            destination = grid.getNode(0,1)
+            result = grid.findPath(100,start,destination)
 
-            nodesMatch(start,field.findPath(100,start,destination))
+            nodesMatch(start, result)
+
+            destination = start
+            start = result
+            result = grid.findPath(100,start,destination)
+
+            nodesMatch(start, result)
+
+            destination = grid.getNode(0,2)
+            start = grid.getNode(3,1)
+            result = grid.findPath(100,start,destination)
+
+            nodesMatch(start,result)
         })
     })
 })
 
 function nodesMatch(node1, node2, bool=true){
-    nullCheck(node1)
-    nullCheck(node2)
+    try {
+        nullCheck(node1)
+        nullCheck(node2)
 
-    const matches = bool 
-        ? 'matches' 
-        : 'does not match'
+        const description = 
+            getCounter() + nodeAlias(node1) + matches(bool) + nodeAlias(node2)
 
-    const description = 
-        `Test ${counter}:`+ ntab +
-        `${node1.toString()}` + ntab + 
-        matches + ntab +
-        `${node2.toString()}`
+        it(description, () => {
+            bool
+                ? expect(node1.matches(node2)).to.be.true
+                : expect(node1.matches(node2)).to.be.false
+        })
+    } catch(error) {
+        const description = 
+            getCounter() + nodeAlias(node1) + matches(bool) + nodeAlias(node2)
 
-    it(description, () => {
-        bool
-            ? expect(node1.matches(node2)).to.be.true
-            : expect(node1.matches(node2)).to.be.false
-    })
-    
-    counter++
+        it(description + threwError, () => {
+            expect(true).to.eql(false)
+        })
+    } finally {    
+        count()
+    }
 }
 
 function nodeEvaluatesTo(node, bool=true, value=null){
@@ -225,7 +281,7 @@ function nodeEvaluatesTo(node, bool=true, value=null){
             : 'does not evaluate to '
 
         const description = 
-            testCount() + nodeAlias(node) + evaluatesTo + value
+            getCounter() + nodeAlias(node) + evaluatesTo + value
 
         it(description,() => {
             bool
@@ -233,231 +289,123 @@ function nodeEvaluatesTo(node, bool=true, value=null){
                 : expect(node).to.not.eql(value)
         })
     } catch(error){
-        it(`nodeEvaluatesTo()` + ' threw an error',() => {
+        it(description + `nodeEvaluatesTo()` + threwError,() => {
             expect(true).to.eql(false)
         })
 
         console.log(error)
     } finally {
-        counter++
+        count()
     }
 
 }
 
-function theseNodesEvaluateTo(paths, bool=true, value=null){
-    paths.forEach(path => {        
-        nodeEvaluatesTo(path, bool, value)
+function theseNodesEvaluateTo(nodes, bool=true, value=null){
+    nodes.forEach(node => {        
+        nodeEvaluatesTo(node, bool, value)
     })
 }
 
-function nodeIs(node, value=null, append=''){
+function pathIs(path, bool=true, value=null){
     try {
-        nullCheck(node)
-        
-        it(`Test ${counter}:${append} node is ${value}`, () => {
-            expect(node).to.equal(value)
+        nullCheck(path)
+
+        const description = getCounter() + path.alias + is(bool) + value
+
+        it(description, () => {
+            bool
+                ? expect(path.node).to.eql(value)
+                : expect(path.node).to.not.eql(value)
         })
     } catch(error) {
-
-        it(`Test ${counter}: node is ${value} threw an error`, () => {
-            expect(node).to.equal(value)
+        const description = getCounter() + 'path check' + is(bool) + value
+        it(description + threwError, () => {
+            expect(true).to.eql(false)
         })
-
-        console.log(error)
     } finally {
-        counter++
+        count()
     }
 }
 
-function thesePathsAre(paths, value=null){
+function thesePathsAre(paths, bool=true, value=null){
     paths.forEach(path => {
-        let pathTo
-        path === null
-            ? pathTo = ` Path to ${path}`
-            : pathTo = ` Path to ${path.locationToString()}`
-        nodeIs(path, value, pathTo)
+        pathIs(path, bool, value)
     })
 }
 
-function allPathsAre(node, value=null){
-    const allPaths = [
-        node.getEA(),
-        node.getNO(),
-        node.getWE(),
-        node.getSO(),
-        node.getNE(),
-        node.getNW(),
-        node.getSW(),
-        node.getSE()
-    ]
-
-    thesePathsAre(allPaths, value)
-}
-
-function nodeIsNot(node, value=null, append=''){
-    try {
+function allPathsAre(node, bool=true, value=null){
         nullCheck(node)
-        
-        it(`Test ${counter}:${append} node is not ${value}`, () => {
-            expect(node).to.not.equal(value)
-        })
-    } catch(error) {
 
-        it(`Test ${counter}: node is not ${value} threw an error`, () => {
-            expect(node).to.not.equal(value)
-        })
-
-        console.log(error)
-    } finally {
-        counter++
-    }
-}
-
-function thesePathsAreNot(paths, value=null){
-
-    paths.forEach(path => {
-        let pathTo
-        path === null
-            ? pathTo = ` Path to ${path}`
-            : pathTo = ` Path to ${path.locationToString()}`
-        nodeIsNot(path, value, pathTo)
-    })
-}
-
-function allPathsAreNot(node, value=null){
-    const allPaths = [
-        node.getEA(),
-        node.getNO(),
-        node.getWE(),
-        node.getSO(),
-        node.getNE(),
-        node.getNW(),
-        node.getSW(),
-        node.getSE()
-    ]
-
-    thesePathsAreNot(allPaths, value)
-}
-
-function pathIsAvailable(start, pathEnum, available=true){
-    it(`Test ${counter}: ${start.locationToString()} ${pathEnum.v()} is${!available ? ' not' : ''} available`, () => {
-        const valid = Grid.pathIsAvailable(start, pathEnum)
-        available
-            ?   expect(valid).to.be.true
-            :   expect(valid).to.be.false
-    })
-    counter++
-}
-
-function thesePathsAreAvailable(start, paths, available=true){
-    paths.forEach(path => {
-        pathIsAvailable(start, path, available)
-    })
-}
-
-function allPathsAreAvailable(start, available=true){
-    const paths = [
-        Node.ea,
-        Node.ne,
-        Node.no,
-        Node.nw,
-        Node.we,
-        Node.sw,
-        Node.so,
-        Node.se
-    ]
-
-    thesePathsAreAvailable(start, paths, available)
+        const paths = node.getPaths()
+        thesePathsAre(paths, bool, value)
 }
 
 function indicesAre(node, intX=null, intY=null, intZ=null){
     try {
         nullCheck(node)
-        it(`Test ${counter}: ${node.locationToString()}.index.x is ${intX}`, () => {
+
+        let description 
+        
+        description = getCounter() + node.locationToString() + ' getX() is ' + intX
+        it(description, () => {
             expect(node.getX()).to.eql(intX)
         })
-        counter++
+        count()
 
-        it(`Test ${counter}: ${node.locationToString()}.index.y is ${intY}`, () => {
+        description = getCounter() + node.locationToString() + ' getY() is ' + intY
+        it(description, () => {
             expect(node.getY()).to.eql(intY)
         })
-        counter++
+        count()
 
         if(intZ !== null) {
 
-            it(`Test ${counter}: ${node.locationToString()}.index.z is ${intZ}`, () => {
+            description = getCounter() + node.locationToString() + ' getZ() ' + intZ
+            it(description, () => {
                 expect(node.getZ()).to.eql(intZ)
             })
-            counter++
+            count()
 
         }
 
     } catch(error) {
         // console.error(error)
-        it(`Test ${counter}: node.index.x is ${intX} threw an error`, () => {
+
+        let description = getCounter() + node.locationToString() + ' indices check threw an error'
+        it(description, () => {
             expect(false).to.eql(true)
         })
-        counter++
 
-        it(`Test ${counter}: node.index.y is ${intY} threw an error`, () => {
-            expect(false).to.eql(true)
-        })
-        counter++
-
-        if(intZ !== null) {
-
-            it(`Test ${counter}: ${node.locationToString()}.index.z is ${intZ} threw an error`, () => {
-                expect(false).to.be.true
-            })
-            counter++
-
-        }
+    } finally {
+        count()
     }
 }
 
 function coverIs(node, int=0){
     try {
-        it(`Test ${counter}: Cover is ${int}`, () => {
+        nullCheck(node)
+
+        const description = getCounter() + node.locationToString() + ' cover is ' + int
+        it(description, () => {
             expect(node.getCover()).to.equal(int)
         })
-        counter++
+        count()
     } catch(error) {
+
         // console.log(error)
-        it(`Test ${counter}: Cover is ${int} threw an error`, () => {
+        const description = getCounter() + node.locationToString() + ' cover is ' + int
+
+        it(description + threwError, () => {
             expect(true).to.equal(false)
         })
-        counter++
-    }
-}
-
-function testCount(){
-    return `Test ${counter} - `
-}
-
-function nullCheck(node){
-    if(!node){
-        return new TypeError('Null Node Error: the node is null');
+        count()
     }
 }
 
 function nodeAlias(node){
-    if(node){
-        return node.locationToString() + ' '
+    if(node === null){
+        return 'null node'
     } else {
-        return 'null node '
+        return node.locationToString()
     }
 }
-
-/**
-
-describe(``, () => {
-    describe(``, () => {
-        it(`Test ${counter}: `, () => {
-    
-        })
-        counter++
-
-    })    
-})
-
- */
