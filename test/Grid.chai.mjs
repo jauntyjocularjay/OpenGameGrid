@@ -51,7 +51,7 @@ describe('Grid.mjs', () => {
             const origin = new Node(0,0)
             throwsError('matches()', nodesMatch)
             throwsError('setCover()', origin.setCover)
-            // throwsError('setEA()', origin.setEA, null, false)
+            throwsError('setEA()', origin.setEA, null, false)
         })
 
         describe('Nodes constructor without arguments.', () => {
