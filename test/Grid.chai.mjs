@@ -10,7 +10,6 @@ import {
 import {
     valueMatch,
     throwsError,
-    getCounter,
     count,
     matches,
     nullCheck,
@@ -21,9 +20,6 @@ import {
 } from './ChaiFunctions/ChaiFunctions.mjs'
 
 
-
-let counter = 1
-const ntab = '\n            '
 
 describe('Grid.chai.mjs functions', () => {
     describe('Testing methods deal with errors', () => {
@@ -49,9 +45,9 @@ describe('Grid.mjs', () => {
         describe('Node methods deal with errors', () => {
             const node = null
             const origin = new Node(0,0)
-            throwsError('matches()', nodesMatch)
-            throwsError('setCover()', origin.setCover)
-            throwsError('setEA()', origin.setEA, null, false)
+            throwsError('Node.matches()', nodesMatch)
+            throwsError('Node.setCover()', origin.setCover)
+            throwsError('Node.matches()', origin.matches, null, true, TypeError)
         })
 
         describe('Nodes constructor without arguments.', () => {
@@ -255,7 +251,7 @@ function nodesMatch(node1, node2, bool=true){
         nullCheck(node2)
 
         const description = 
-            getCounter() + nodeAlias(node1) + matches(bool) + nodeAlias(node2)
+            count() + nodeAlias(node1) + matches(bool) + nodeAlias(node2)
 
         it(description, () => {
             bool
@@ -264,13 +260,11 @@ function nodesMatch(node1, node2, bool=true){
         })
     } catch(error) {
         const description = 
-            getCounter() + nodeAlias(node1) + matches(bool) + nodeAlias(node2)
+            count() + nodeAlias(node1) + matches(bool) + nodeAlias(node2)
 
         it(description + threwError, () => {
             expect(true).to.eql(false)
         })
-    } finally {    
-        count()
     }
 }
 
@@ -281,7 +275,7 @@ function nodeEvaluatesTo(node, bool=true, value=null){
             : 'does not evaluate to '
 
         const description = 
-            getCounter() + nodeAlias(node) + evaluatesTo + value
+            count() + nodeAlias(node) + evaluatesTo + value
 
         it(description,() => {
             bool
@@ -294,8 +288,6 @@ function nodeEvaluatesTo(node, bool=true, value=null){
         })
 
         console.log(error)
-    } finally {
-        count()
     }
 
 }
@@ -310,7 +302,7 @@ function pathIs(path, bool=true, value=null){
     try {
         nullCheck(path)
 
-        const description = getCounter() + path.alias + is(bool) + value
+        const description = count() + path.alias + is(bool) + value
 
         it(description, () => {
             bool
@@ -318,12 +310,10 @@ function pathIs(path, bool=true, value=null){
                 : expect(path.node).to.not.eql(value)
         })
     } catch(error) {
-        const description = getCounter() + 'path check' + is(bool) + value
+        const description = count() + 'path check' + is(bool) + value
         it(description + threwError, () => {
             expect(true).to.eql(false)
         })
-    } finally {
-        count()
     }
 }
 
@@ -344,40 +334,44 @@ function indicesAre(node, intX=null, intY=null, intZ=null){
     try {
         nullCheck(node)
 
+        // valueMatch(node.getX(), intX)
+        // valueMatch(node.getY(), intY)
+        // if(intZ){
+        //     valueMatch(node.getZ(), intZ)
+        // }
+
         let description 
         
-        description = getCounter() + node.locationToString() + ' getX() is ' + intX
+        description = count() + node.locationToString() + ' getX() is ' + intX
+
         it(description, () => {
             expect(node.getX()).to.eql(intX)
         })
-        count()
 
-        description = getCounter() + node.locationToString() + ' getY() is ' + intY
+        description = count() + node.locationToString() + ' getY() is ' + intY
         it(description, () => {
             expect(node.getY()).to.eql(intY)
         })
-        count()
 
         if(intZ !== null) {
 
-            description = getCounter() + node.locationToString() + ' getZ() ' + intZ
+            description = count() + node.locationToString() + ' getZ() ' + intZ
             it(description, () => {
                 expect(node.getZ()).to.eql(intZ)
             })
-            count()
 
         }
 
     } catch(error) {
         // console.error(error)
+        // valueMatch(false, true)
 
-        let description = getCounter() + node.locationToString() + ' indices check threw an error'
+
+        let description = count() + node.locationToString() + ' indices check threw an error'
         it(description, () => {
             expect(false).to.eql(true)
         })
 
-    } finally {
-        count()
     }
 }
 
@@ -385,7 +379,7 @@ function coverIs(node, int=0){
     try {
         nullCheck(node)
 
-        const description = getCounter() + node.locationToString() + ' cover is ' + int
+        const description = count() + node.locationToString() + ' cover is ' + int
         it(description, () => {
             expect(node.getCover()).to.equal(int)
         })
@@ -393,7 +387,7 @@ function coverIs(node, int=0){
     } catch(error) {
 
         // console.log(error)
-        const description = getCounter() + node.locationToString() + ' cover is ' + int
+        const description = count() + node.locationToString() + ' cover is ' + int
 
         it(description + threwError, () => {
             expect(true).to.equal(false)
