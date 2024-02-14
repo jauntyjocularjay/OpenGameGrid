@@ -79,7 +79,7 @@ export class Grid {
     linkAll(start) {
         /**
          * @method linkAll
-         *      connects the field of nodes together by every available path. 
+         *      connects the field of nodes together by every available path.
          */
         this.linkXYPositive(start)
         this.linkYPositive(start)
@@ -95,6 +95,10 @@ export class Grid {
     }
 
     linkXYPositive(start){
+        /**
+         * @method linkXYPositive links the nodes in the x, y positive direction
+         * @param { Node } start is the current node linking to the next nodes
+         */
         if(start.getNO() !== null && start.getNO().getEA() !== null){
             start.setNE(start.getNO().getEA())
             start.getNO().getEA().setSW(start)
@@ -102,6 +106,10 @@ export class Grid {
     }
 
     linkYPositive(start){
+        /**
+         * @method linkYPositive links the nodes in the y positive direction
+         * @param { Node } start is the current node linking to the next nodes
+         */
         if(     start.getNO() !== null && 
                 start.getNO().getEA() !== null && 
                 start.getEA() !== null){
@@ -111,27 +119,37 @@ export class Grid {
     }
 
     linkXYNegative(start){
+        /**
+         * @method linkXYNegative links the nodes in the x, y negative direction
+         * @param { Node } start is the current node linking to the next nodes
+         */
         if(start.getNO() !== null && start.getEA() !== null){
             start.getNO().setSE(start.getEA())
             start.getEA().setNW(start.getNO())
         }
     }
 
-    getNode(positionX, positionY) {
+    getNode(indexX, indexY) {
+        /**
+         * @method getNode returns the node at the positionX, positionY
+         * @param { number } positionX is the x-index of the node
+         * @param { number } positionY is the y-index of the node
+         * @returns { Node } the node at the positionX, positionY
+         */
         let currentNode = this.origin
 
-        if((positionX > this.getWidth()-1 || positionX < 0) && (positionY > this.getDepth()-1 || positionY < 0)){
+        if((indexX > this.getWidth()-1 || indexX < 0) && (indexY > this.getDepth()-1 || indexY < 0)){
             throw new RangeError('Out Of Bounds: the selected position is not on the field.')
         }
 
         if(currentNode.getNO() !== null){
-            for( let j = 0 ; j < positionY; j++ ){
+            for( let j = 0 ; j < indexY; j++ ){
                 currentNode = currentNode.getNO()
             }
         }
 
         if(currentNode.getEA() !== null){
-            for( let i = 0 ; i < positionX ; i++ ){
+            for( let i = 0 ; i < indexX ; i++ ){
                 currentNode = currentNode.getEA()
             }
         }
@@ -141,6 +159,10 @@ export class Grid {
     }
 
     getWidth(){
+        /**
+        * @method getWidth returns the width of the field
+        * @returns { number } the width of the field
+        */
         let currentNode = this.origin
         let i = 1
 
@@ -153,6 +175,10 @@ export class Grid {
     }
 
     getDepth(){
+        /**
+         * @method getDepth returns the depth of the field
+         * @returns { number } the depth of the field
+         */
         let currentNode = this.origin
         let j = 1
 
@@ -186,6 +212,15 @@ export class Grid {
     }
 
     tryDiagonal(pts, currentNode, destination){
+        /**
+         * @method tryDiagonal is a recursive method that finds the 
+         *      most direct path to another node on the grid.
+         * @param { number } pts is the number of action points the unit has
+         * @param { Node } currentNode is the node the path starts on
+         *      and the node the method is currently on
+         * @param { Node } destination is the node the unit wants to move to
+         * @returns { void } assumes no diagonal path is necessary
+         */
         const p2 = destination.position
         const p1 = currentNode.position
 
@@ -210,13 +245,20 @@ export class Grid {
             this.findPath(pts, currentNode.getSE(), destination)
 
         } else {
-
             return
-
         }
     }
 
     tryCardinal(pts, currentNode, destination){
+        /**
+         * @method tryCardinal is a recursive method that finds the
+         *     most direct path to another node on the grid.
+         * @param { number } pts is the number of action points the unit has
+         * @param { Node } currentNode is the node the path starts on
+         *     and the node the method is currently on
+         * @param { Node } destination is the node the unit wants to move to
+         * @returns { void } assumes no cardinal path is necessary
+         */
         const p2 = destination.position
         const p1 = currentNode.position
 
@@ -245,24 +287,32 @@ export class Grid {
             this.findPath(pts, currentNode, destination)
 
         } else {
-
             return
-
         }
 
     }
 
-    static pathIsAvailable(start, pathEnum){
-        const target = start.path[pathEnum.v()].node
-        if(     target !== null &&
-                target.getCover() === 0){
-            return true
-        } else {
-            return false
-        }
-    }
+    // static pathIsAvailable(start, pathEnum){
+    //     const target = start.path[pathEnum.v()].node
+    //     if(     target !== null &&
+    //             target.getCover() === 0){
+    //         return true
+    //     } else {
+    //         return false
+    //     }
+    // }
 
     goNO(pts, currentNode, destination){
+        /**
+         * @method goNO is a method that checks if the path to the north
+         *      is available and if the unit has enough action points to move
+         * @param { number } pts is the number of action points the unit has
+         * @param { Node } currentNode is the node the path starts on
+         *      and the node the method is currently on
+         * @param { Node } destination is the node the unit wants to move to
+         * @returns { boolean } true if the path is available and the unit 
+         *      has enough action points
+         */
         const p2 = destination.position
         const p1 = currentNode.position
         const valid = 
@@ -275,6 +325,16 @@ export class Grid {
     }
 
     goSO(pts, currentNode, destination){
+        /**
+         * @method goSO is a method that checks if the path to the south
+         *      is available and if the unit has enough action points to move
+         * @param { number } pts is the number of action points the unit has
+         * @param { Node } currentNode is the node the path starts on
+         *      and the node the method is currently on
+         * @param { Node } destination is the node the unit wants to move to
+         * @returns { boolean } true if the path is available and the unit
+         *      has enough action points
+         */
         const p2 = destination.position
         const p1 = currentNode.position
         const valid = 
@@ -287,6 +347,16 @@ export class Grid {
     }
 
     goEA(pts, currentNode, destination){
+        /**
+         * @method goEA is a method that checks if the path to the east
+         *      is available and if the unit has enough action points to move
+         * @param { number } pts is the number of action points the unit has
+         * @param { Node } currentNode is the node the path starts on
+         *      and the node the method is currently on
+         * @param { Node } destination is the node the unit wants to move to
+         * @returns { boolean } true if the path is available and the unit
+         *      has enough action points
+         */
         const p2 = destination.position
         const p1 = currentNode.position
         const valid = 
@@ -299,6 +369,16 @@ export class Grid {
     }
 
     goWE(pts, currentNode, destination){
+        /**
+         * @method goWE is a method that checks if the path to the west
+         *      is available and if the unit has enough action points to move
+         * @param { number } pts is the number of action points the unit has
+         * @param { Node } currentNode is the node the path starts on
+         *      and the node the method is currently on
+         * @param { Node } destination is the node the unit wants to move to
+         * @returns { boolean } true if the path is available and the unit
+         *      has enough action points
+         */
         const p2 = destination.position
         const p1 = currentNode.position
         const valid = 
@@ -311,6 +391,16 @@ export class Grid {
     }
 
     goNE(pts, currentNode, destination){
+        /**
+         * @method goNE is a method that checks if the path to the north east
+         *      is available and if the unit has enough action points to move
+         * @param { number } pts is the number of action points the unit has
+         * @param { Node } currentNode is the node the path starts on
+         *      and the node the method is currently on
+         * @param { Node } destination is the node the unit wants to move to
+         * @returns { boolean } true if the path is available and the unit
+         *      has enough action points
+         */
         const p2 = destination.position
         const p1 = currentNode.position
         const valid = 
@@ -323,6 +413,16 @@ export class Grid {
     }
 
     goNW(pts, currentNode, destination){
+        /**
+         * @method goNW is a method that checks if the path to the north west
+         *      is available and if the unit has enough action points to move
+         * @param { number } pts is the number of action points the unit has
+         * @param { Node } currentNode is the node the path starts on
+         *      and the node the method is currently on
+         * @param { Node } destination is the node the unit wants to move to
+         * @returns { boolean } true if the path is available and the unit
+         *      has enough action points
+         */
         const p2 = destination.position
         const p1 = currentNode.position
         const valid = 
@@ -335,6 +435,16 @@ export class Grid {
     }
 
     goSW(pts, currentNode, destination){
+        /**
+         * @method goSW is a method that checks if the path to the south west
+         *      is available and if the unit has enough action points to move
+         * @param { number } pts is the number of action points the unit has
+         * @param { Node } currentNode is the node the path starts on
+         *      and the node the method is currently on
+         * @param { Node } destination is the node the unit wants to move to
+         * @returns { boolean } true if the path is available and the unit
+         *      has enough action points
+         */
         const p2 = destination.position
         const p1 = currentNode.position
         const valid = 
@@ -347,6 +457,16 @@ export class Grid {
     }
     
     goSE(pts, currentNode, destination){
+        /**
+         * @method goSE is a method that checks if the path to the south east
+         *      is available and if the unit has enough action points to move
+         * @param { number } pts is the number of action points the unit has
+         * @param { Node } currentNode is the node the path starts on
+         *      and the node the method is currently on
+         * @param { Node } destination is the node the unit wants to move to
+         * @returns { boolean } true if the path is available and the unit
+         *      has enough action points
+         */
         const p2 = destination.position
         const p1 = currentNode.position
         const valid = 
@@ -359,6 +479,15 @@ export class Grid {
     }
 
     coverBlocks(node1, node2, mod=0){
+        /**
+         * @method coverBlocks is a method that checks if the cover of the
+         *     destination node blocks the path to the destination node
+         * @param { Node } node1 is the node the path starts on
+         * @param { Node } node2 is the node the unit wants to move to
+         * @param { number } mod is the modifier to the cover value
+         *      for use with abilities.
+         * @returns { boolean } true if the cover blocks the path
+         */
         return node2.getZ() - node1.getZ() < 2 + mod
     }
 
@@ -436,6 +565,15 @@ export class Node {
     }
 
     setCover( cover ){
+        /**
+         * @method setCover sets the cover of the node
+         * @param { string } cover is the value corresponding to 
+         *      the enum value
+         * @throws { TypeError } if the argument is not a string
+         * @throws { RangeError } if the argument is not a valid 
+         *      cover value
+         * @returns { void }
+         */
         if( typeof cover === 'string'){
             this.cover.select(cover)
         } else if( cover === 0 ){
@@ -450,6 +588,12 @@ export class Node {
     }
 
     getCover(){
+        /**
+         * @method getCover returns the cover of the node
+         * @returns { string } the cover of the node
+         * @throws { RangeError } if the cover's value is out of range
+         * @summary returns the cover of the node
+         */
         if( this.cover.valueOf() === 'ZERO' ){
             return 0
         } else if( this.cover.valueOf() === 'HALF' ){
@@ -462,6 +606,12 @@ export class Node {
     }
 
     locationToString(){
+        /**
+         * @method locationToString returns a string of the node indices
+         * @returns { string } the indices of the node
+         *      or 'node without indices' if the node has no indices
+         * @summary returns a string describing the indices of the node
+         */
         if(this.getX() === null || this.getY() === null){
             return 'node without indices'
         } else {
@@ -470,14 +620,26 @@ export class Node {
     }
 
     getPaths(){
+        /**
+         * @method getPaths returns the paths of the node
+         * @returns { Array } an array of the paths of the node
+         */
         return Object.values(this.path)
     }
 
     getIndex(){
+        /**
+         * @method getIndex returns the index object of the node
+         * @returns { Object } the index object of the node
+         */
         return this.index
     }
 
     getPathEA(){
+        /**
+         * @method getPathEA returns the path to the east
+         * @returns { Object } the path to the east
+         */
         return this.path.ea
     }
     
