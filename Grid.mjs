@@ -131,10 +131,10 @@ export class Grid {
 
     getNode(indexX, indexY) {
         /**
-         * @method getNode returns the node at the positionX, positionY
+         * @method getNode returns the node at the indexX, indexY
          * @param { number } positionX is the x-index of the node
          * @param { number } positionY is the y-index of the node
-         * @returns { Node } the node at the positionX, positionY
+         * @returns { Node } the node at the indexX, indexY
          */
         let currentNode = this.origin
 
@@ -564,6 +564,53 @@ export class Node {
         this.cover = new Enum(['ZERO','HALF','WHOLE'])
     }
 
+    locationToString(){
+        /**
+         * @method locationToString returns a string of the node indices
+         * @returns { string } the indices of the node
+         *      or 'node without indices' if the node has no indices
+         * @summary returns a string describing the indices of the node
+         */
+        if(this.getX() === null || this.getY() === null){
+            return 'node without indices'
+        } else {
+            return `node@(${this.getX()},${this.getY()})`
+        }
+    }
+
+    toString(){
+        return `(${JSON.stringify(this.value())})`
+    }
+
+    matches(node){
+        const result = 
+            this.getX() === node.getX() &&
+            this.getY() === node.getY() &&
+            this.getZ() === node.getZ() &&
+            this.getCover().valueOf() === node.getCover().valueOf()
+
+        return result
+    }
+
+    value(){
+        /**
+         * @method valueOf
+         * @returns { Object } an object with the position and cover of the node
+         * @summary returns an object that allows for the comparison of nodes
+         */
+        return {
+            position: this.getIndex(),
+            cover: this.cover.valueOf()
+        }
+    }
+
+    v(){
+        /**
+         * @method v is short for valueOf
+         */
+        return this.value()
+    }
+
     setCover( cover ){
         /**
          * @method setCover sets the cover of the node
@@ -602,20 +649,6 @@ export class Node {
             return 2
         } else {
             throw new RangeError(`Cover's value is out of range`)
-        }
-    }
-
-    locationToString(){
-        /**
-         * @method locationToString returns a string of the node indices
-         * @returns { string } the indices of the node
-         *      or 'node without indices' if the node has no indices
-         * @summary returns a string describing the indices of the node
-         */
-        if(this.getX() === null || this.getY() === null){
-            return 'node without indices'
-        } else {
-            return `node@(${this.getX()},${this.getY()})`
         }
     }
 
@@ -757,38 +790,5 @@ export class Node {
 
     setZ(posZ){
         this.index.x = posZ
-    }
-
-    toString(){
-        return `(${JSON.stringify(this.valueOf())})`
-    }
-
-    matches(node){
-        const result = 
-            this.getX() === node.getX() &&
-            this.getY() === node.getY() &&
-            this.getZ() === node.getZ() &&
-            this.getCover().valueOf() === node.getCover().valueOf()
-
-        return result
-    }
-
-    v(){
-        /**
-         * @method v is short for valueOf
-         */
-        return this.valueOf()
-    }
-
-    valueOf(){
-        /**
-         * @method valueOf
-         * @returns { Object } an object with the position and cover of the node
-         * @summary returns an object that allows for the comparison of nodes
-         */
-        return {
-            position: this.getIndex(),
-            cover: this.cover.valueOf()
-        }
     }
 }
