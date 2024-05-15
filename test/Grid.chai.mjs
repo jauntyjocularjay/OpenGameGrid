@@ -208,9 +208,6 @@ describe('Grid.mjs', () => {
         })
 
         describe('Pathfinding', () => {
-            /**
-             * @todo finish pathfinding tests
-             */
             const grid = new Grid(4,4)
             let start = grid.origin.getEA()
             let destination
