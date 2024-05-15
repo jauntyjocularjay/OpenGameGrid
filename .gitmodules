@@ -7,3 +7,9 @@
 [submodule "test/ChaiFunctions"]
 	path = test/ChaiFunctions
 	url = https://github.com/GeorgeSchafer/ChaiFunctions.git
+[submodule "sh"]
+	path = sh
+	url = https://www.github.com/jauntyjocularjay/KwikGit
+[submodule "test/chaitests"]
+	path = test/chaitests
+	url = https://www.github.com/jauntyjocularjay/ChaiTests
