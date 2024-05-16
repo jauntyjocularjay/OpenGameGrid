@@ -1,7 +1,7 @@
 import {
     Enum,
     ExtEnum
-} from './libs/EnumJS/ENUM.mjs'
+} from './Enumjs/ENUM.mjs'
 
 
 /**
