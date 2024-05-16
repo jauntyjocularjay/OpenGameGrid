@@ -1,9 +1,3 @@
-[submodule "kg"]
-	path = kg
-	url = https://github.com/GeorgeSchafer/KwikGit.git
-[submodule "test/ChaiFunctions"]
-	path = test/ChaiFunctions
-	url = https://github.com/GeorgeSchafer/ChaiFunctions.git
 [submodule "sh"]
 	path = sh
 	url = https://www.github.com/jauntyjocularjay/KwikGit
