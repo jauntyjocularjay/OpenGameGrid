@@ -469,21 +469,27 @@ export class Grid {
     }
 
     populateGrid(funct){
-        const currentNode = this.origin
+
+        let currentNode = this.origin
         currentNode.data = funct()
 
-        do {
+        this.populateEast(currentNode, funct)
+        this.populateNorth(currentNode, funct)
+    }
+
+    populateEast(currentNode, funct){
+        while(currentNode.getEA() !== null){
             currentNode.data = funct()
-            currentNode = currentNode.getEA()
-        } while(currentNode.getEA() !== null)
-        
-        do {
+            currentNode = currentNode.getEA()    
+        }
+    }
+
+    populateNorth(currentNode, funct){
+        while(currentNode.getNO() !== null){
             currentNode = currentNode.getNO()
-            do {
-                currentNode.data = funct()
-                currentNode = currentNode.getEA()
-            } while(currentNode.getEA() !== null)    
-        } while (currentNode.getNO() !== null)
+            currentNode.dada = funct()
+            this.populateEast(currentNode, funct)
+        } 
     }
 
 }
