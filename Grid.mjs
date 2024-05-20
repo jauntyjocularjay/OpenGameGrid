@@ -292,16 +292,6 @@ export class Grid {
 
     }
 
-    // static pathIsAvailable(start, pathEnum){
-    //     const target = start.path[pathEnum.v()].node
-    //     if(     target !== null &&
-    //             target.getCover() === 0){
-    //         return true
-    //     } else {
-    //         return false
-    //     }
-    // }
-
     goNO(pts, currentNode, destination){
         /**
          * @method goNO is a method that checks if the path to the north
@@ -478,17 +468,22 @@ export class Grid {
         return valid
     }
 
-    coverBlocks(node1, node2, mod=0){
-        /**
-         * @method coverBlocks is a method that checks if the cover of the
-         *     destination node blocks the path to the destination node
-         * @param { Node } node1 is the node the path starts on
-         * @param { Node } node2 is the node the unit wants to move to
-         * @param { number } mod is the modifier to the cover value
-         *      for use with abilities.
-         * @returns { boolean } true if the cover blocks the path
-         */
-        return node2.getZ() - node1.getZ() < 2 + mod
+    populateGrid(funct){
+        const currentNode = this.origin
+        currentNode.data = funct()
+
+        do {
+            currentNode.data = funct()
+            currentNode = currentNode.getEA()
+        } while(currentNode.getEA() !== null)
+        
+        do {
+            currentNode = currentNode.getNO()
+            do {
+                currentNode.data = funct()
+                currentNode = currentNode.getEA()
+            } while(currentNode.getEA() !== null)    
+        } while (currentNode.getNO() !== null)
     }
 
 }
@@ -498,7 +493,7 @@ export class Node {
     static CARDINAL = CARDINAL
     static DIAGONAL = DIAGONAL
 
-    constructor( x=null, y=null, z=0, cover='ZERO' ){
+    constructor( x=null, y=null, z=0 ){
         /**
          * Node represents a node on a grid of squares. Each square on the grid 
          * has a path to each adjascent node. However, this implementation takes into
@@ -507,9 +502,6 @@ export class Node {
          * @param { number } posX represents the location of the node in the x-direction
          * @param { number } posY represents the location of the node in the y-direction
          * @param { number } posZ represents the height of the square
-         * @property { Enum } cover
-         *      @todo finish this implementation
-         *      Cover is a modifier on toHit chance units get as a bonus
          */
 
         this.path = { 
@@ -561,7 +553,7 @@ export class Node {
             z: z
         }
 
-        this.cover = new Enum(['ZERO','HALF','WHOLE'])
+        this.data = null
     }
 
     locationToString(){
@@ -586,21 +578,20 @@ export class Node {
         const result = 
             this.getX() === node.getX() &&
             this.getY() === node.getY() &&
-            this.getZ() === node.getZ() &&
-            this.getCover().valueOf() === node.getCover().valueOf()
+            this.getZ() === node.getZ()
 
         return result
     }
 
-    value(){
+    valueOf(){
         /**
          * @method valueOf
-         * @returns { Object } an object with the position and cover of the node
+         * @returns { Object } an object with the position and data of the node
          * @summary returns an object that allows for the comparison of nodes
          */
         return {
             position: this.getIndex(),
-            cover: this.cover.valueOf()
+            data: this.data.valueOf()
         }
     }
 
@@ -609,47 +600,6 @@ export class Node {
          * @method v is short for valueOf
          */
         return this.value()
-    }
-
-    setCover( cover ){
-        /**
-         * @method setCover sets the cover of the node
-         * @param { string } cover is the value corresponding to 
-         *      the enum value
-         * @throws { TypeError } if the argument is not a string
-         * @throws { RangeError } if the argument is not a valid 
-         *      cover value
-         * @returns { void }
-         */
-        if( typeof cover === 'string'){
-            this.cover.select(cover)
-        } else if( cover === 0 ){
-            this.cover.select('ZERO')
-        } else if( cover === 1 ){
-            this.cover.select('ONE')
-        } else if( cover === 2 ){
-            this.cover.select('WHOLE')
-        } else {
-            throw new TypeError('Invalid setCover(arg) argument.')
-        }
-    }
-
-    getCover(){
-        /**
-         * @method getCover returns the cover of the node
-         * @returns { string } the cover of the node
-         * @throws { RangeError } if the cover's value is out of range
-         * @summary returns the cover of the node
-         */
-        if( this.cover.valueOf() === 'ZERO' ){
-            return 0
-        } else if( this.cover.valueOf() === 'HALF' ){
-            return 1
-        } else if( this.cover.valueOf() === 'WHOLE' ){
-            return 2
-        } else {
-            throw new RangeError(`Cover's value is out of range`)
-        }
     }
 
     getPaths(){

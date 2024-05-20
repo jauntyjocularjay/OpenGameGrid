@@ -17,7 +17,7 @@ import {
     have,
     is,
     did
-} from './chaitests/chaitests.mjs'
+} from './chaitests/Chai.mjs'
 
 
 
@@ -35,7 +35,7 @@ describe('Grid.chai.mjs functions', () => {
         throwsError('thesePathsAre()', thesePathsAre, paths, false, TypeError)
         throwsError('allPathsAre()', allPathsAre, node, true, TypeError)
         throwsError('indicesAre()', indicesAre, null, TypeError)
-        throwsError('CoverIs()', coverIs, null, TypeError)
+        // throwsError('CoverIs()', coverIs, null, TypeError)
         throwsError('nodeAlias()', nodeAlias, null, false, TypeError)
     })
 })
@@ -46,7 +46,7 @@ describe('Grid.mjs', () => {
             const node = null
             const origin = new Node(0,0)
             throwsError('Node.matches()', nodesMatch)
-            throwsError('Node.setCover()', origin.setCover)
+            // throwsError('Node.setCover()', origin.setCover)
             throwsError('Node.matches()', origin.matches, null, true, TypeError)
         })
 
@@ -55,7 +55,7 @@ describe('Grid.mjs', () => {
 
             allPathsAre(node)
             indicesAre(node)
-            coverIs(node)
+            // coverIs(node)
         })
 
         describe('Node constructor at origin', () => {
@@ -372,26 +372,26 @@ function indicesAre(node, intX=null, intY=null, intZ=null){
     }
 }
 
-function coverIs(node, int=0){
-    try {
-        nullCheck(node)
+// function coverIs(node, int=0){
+//     try {
+//         nullCheck(node)
 
-        const description = count() + node.locationToString() + ' cover is ' + int
-        it(description, () => {
-            expect(node.getCover()).to.equal(int)
-        })
-        count()
-    } catch(error) {
+//         const description = count() + node.locationToString() + ' cover is ' + int
+//         it(description, () => {
+//             expect(node.getCover()).to.equal(int)
+//         })
+//         count()
+//     } catch(error) {
 
-        // console.log(error)
-        const description = count() + node.locationToString() + ' cover is ' + int
+//         // console.log(error)
+//         const description = count() + node.locationToString() + ' cover is ' + int
 
-        it(description + threwError, () => {
-            expect(true).to.equal(false)
-        })
-        count()
-    }
-}
+//         it(description + threwError, () => {
+//             expect(true).to.equal(false)
+//         })
+//         count()
+//     }
+// }
 
 function nodeAlias(node){
     if(node === null){
