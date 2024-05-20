@@ -480,7 +480,7 @@ export class Grid {
     populateEast(currentNode, funct){
         while(currentNode.getEA() !== null){
             currentNode.data = funct()
-            currentNode = currentNode.getEA()    
+            currentNode = currentNode.getEA()
         }
     }
 
