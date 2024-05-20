@@ -487,7 +487,7 @@ export class Grid {
     populateNorth(currentNode, funct){
         while(currentNode.getNO() !== null){
             currentNode = currentNode.getNO()
-            currentNode.dada = funct()
+            currentNode.data = funct()
             this.populateEast(currentNode, funct)
         } 
     }
