@@ -17,7 +17,7 @@ import {
     have,
     is,
     did
-} from './chaitests/chaitests.mjs'
+} from './chaitests/Chai.mjs'
 
 
 
