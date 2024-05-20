@@ -11,8 +11,8 @@ import {
  * action points used to move in a cardinal or diagonal
  * direction respectively.
  */
-const CARDINAL = new ExtEnum([{'CARDINAL':10}, {'DIAGONAL':14}])
-const DIAGONAL = new ExtEnum([{'DIAGONAL':14}, {'CARDINAL':10}])
+const CARDINAL = new ExtEnum([{'CARDINAL':BigInt(10)}, {'DIAGONAL':BigInt(14)}])
+const DIAGONAL = new ExtEnum([{'DIAGONAL':BigInt(14)}, {'CARDINAL':BigInt(10)}])
 
 export class Grid {
 
@@ -28,11 +28,14 @@ export class Grid {
          * @param { number } width is the size in the x-direction
          * @param { number } depth is the size in the y-direction
          */
+        width = BigInt(width)
+        depth = BigInt(depth)
+
         if( width < 1 || depth < 1){
             throw new RangeError('Width and Depth must be greater than 1.')
         }
 
-        this.origin = new Node(0,0)
+        this.origin = new Node(BigInt(0),BigInt(0))
         this.linkEasterly(this.origin, width)
         this.linkNortherly(this.origin, width, depth)
         this.linkAll(this.origin)
