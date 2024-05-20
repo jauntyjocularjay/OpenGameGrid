@@ -12,6 +12,7 @@
   },
   "devDependencies": {},
   "scripts": {
+    "setup": "npm install",
     "test": "mocha test --exit"
   },
   "repository": {
