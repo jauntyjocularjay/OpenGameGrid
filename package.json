@@ -14,6 +14,7 @@
   "scripts": {
     "setup": "npm install",
     "commit": "bash sh/gitCommit.sh",
+    "2dev": "bash sh/git2Dev.sh",
     "dev2beta": "bash sh/gitDev2Beta.sh",
     "beta2master": "bash sh/gitBeta2Master.sh",
     "dev2master": "bash sh/gitDev2Master.sh",
