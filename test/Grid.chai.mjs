@@ -17,7 +17,7 @@ import {
     have,
     is,
     did
-} from './ChaiFunctions/ChaiFunctions.mjs'
+} from './chaitests/chaitests.mjs'
 
 
 
