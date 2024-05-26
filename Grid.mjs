@@ -511,6 +511,9 @@ export class Node {
          * @param { number } posX represents the location of the node in the x-direction
          * @param { number } posY represents the location of the node in the y-direction
          * @param { number } posZ represents the height of the square
+         * @property { path } path represents the link from one node to another
+         * @property { index } index holds the location of the node in x,y,z coordinates
+         * @property { data } data holds whatever data the user wants to store here
          */
 
         this.path = { 
@@ -608,7 +611,15 @@ export class Node {
         /**
          * @method v is short for valueOf
          */
-        return this.value()
+        return this.valueOf()
+    }
+
+    getData(){
+         return data
+    }
+
+    setData(data){
+        this.data = data
     }
 
     getPaths(){
