@@ -19,25 +19,25 @@ export class Grid {
     static CARDINAL = CARDINAL
     static DIAGONAL = DIAGONAL
 
-    constructor(width, depth){
+    constructor(height, width){
         /**
          * Field represents a grid of squares. Each square on the grid is a node 
          * with a path to each adjascent node. However, this implementation takes 
          * into account the length of the hypotnuse for diagonal movement.
          * @constructor 
          * @param { number } width is the size in the x-direction
-         * @param { number } depth is the size in the y-direction
+         * @param { number } height is the size in the y-direction
          */
         width = BigInt(width)
-        depth = BigInt(depth)
+        height = BigInt(height)
 
-        if( width < 1 || depth < 1){
-            throw new RangeError('Width and Depth must be greater than 1.')
+        if( width < 1 || height < 1){
+            throw new RangeError('Width and height must be greater than 1.')
         }
 
         this.origin = new Node(BigInt(0),BigInt(0))
         this.linkEasterly(this.origin, width)
-        this.linkNortherly(this.origin, width, depth)
+        this.linkNortherly(this.origin, width, height)
         this.linkAll(this.origin)
     }
 
@@ -60,7 +60,7 @@ export class Grid {
         }
     }
 
-    linkNortherly(node, width, depth){
+    linkNortherly(node, width, height){
         /**
          * @method linkNortherly
          * @param { Node } node is the node to start with
@@ -70,7 +70,7 @@ export class Grid {
          */
         let currentNode = node
         let lastNode = null
-        for( let j = 1 ; j < depth ; j++ ){
+        for( let j = 1 ; j < height ; j++ ){
             currentNode.setNO(new Node(0,j))
             lastNode = currentNode
             currentNode = currentNode.getNO()
@@ -141,7 +141,7 @@ export class Grid {
          */
         let currentNode = this.origin
 
-        if((indexX > this.getWidth()-1 || indexX < 0) && (indexY > this.getDepth()-1 || indexY < 0)){
+        if((indexX > this.getWidth()-1 || indexX < 0) && (indexY > this.getheight()-1 || indexY < 0)){
             throw new RangeError('Out Of Bounds: the selected position is not on the field.')
         }
 
@@ -177,10 +177,10 @@ export class Grid {
         return i
     }
 
-    getDepth(){
+    getheight(){
         /**
-         * @method getDepth returns the depth of the field
-         * @returns { number } the depth of the field
+         * @method getheight returns the height of the field
+         * @returns { number } the height of the field
          */
         let currentNode = this.origin
         let j = 1
